@@ -22,7 +22,7 @@
 
 ## Nice to have
 
-- [ ] Fix colour schemes (currently dull)
+- [x] Fix colour schemes (currently dull)
 - [ ] Beautify the design
 - [ ] Track how many cards each player should have in hand
 - [ ] Advanced settings (not in main UI to avoid clutter)
