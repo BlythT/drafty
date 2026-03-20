@@ -208,20 +208,20 @@ function formatTime(seconds) {
 // Preset colours array avoids "colour flicker" that the previous evenly-spaced
 // oklab colour generator had
 const PLAYER_COLORS = [
-  { color: '#4269D0', name: 'blue'       },
-  { color: '#EFB118', name: 'yellow'     },
-  { color: '#FF725C', name: 'orange'     },
-  { color: '#6CC5B0', name: 'teal'       },
-  { color: '#3CA951', name: 'green'      },
-  { color: '#FF8AB7', name: 'pink'       },
-  { color: '#A463F2', name: 'purple'     },
-  { color: '#97BBF5', name: 'light blue' },
-  { color: '#9C6B4E', name: 'brown'      },
-  { color: '#9498A0', name: 'gray'       },
+    { color: '#4269D0', name: 'blue' },
+    { color: '#EFB118', name: 'yellow' },
+    { color: '#FF725C', name: 'orange' },
+    { color: '#6CC5B0', name: 'teal' },
+    { color: '#3CA951', name: 'green' },
+    { color: '#FF8AB7', name: 'pink' },
+    { color: '#A463F2', name: 'purple' },
+    { color: '#97BBF5', name: 'light blue' },
+    { color: '#9C6B4E', name: 'brown' },
+    { color: '#9498A0', name: 'gray' },
 ];
 
 function getPlayerColor(index) {
-  return PLAYER_COLORS[index % PLAYER_COLORS.length];
+    return PLAYER_COLORS[index % PLAYER_COLORS.length];
 }
 
 function createPlayer(index, total) {
@@ -293,7 +293,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     container.querySelectorAll('.player').forEach(player => player.remove());
 
-    const [addBtn, removeBtn] = document.querySelectorAll('#controls button');
+    const addBtn = document.querySelector('#add-player');
+    const removeBtn = document.querySelector('#remove-player');
 
     addBtn.addEventListener('click', () => {
         if (playerCount < MAX_PLAYERS) {
