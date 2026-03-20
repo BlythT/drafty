@@ -21,149 +21,326 @@ Makes these layouts slightly less simple, but worth it for the end result.
 */
 const LAYOUTS = {
     2: {
-        areas: `"p1 p2"`,
-        cols: '1fr 1fr',
-        rows: '1fr',
-        players: {
-            // left side
-            p1: 'rotate-90',
-            // right side
-            p2: 'rotate-270',
+        landscape: {
+            areas: `"p1 p2"`,
+            cols: '1fr 1fr',
+            rows: '1fr',
+            players: {
+                // left side
+                p1: 'rotate-90',
+                // right side
+                p2: 'rotate-270',
+            }
+        },
+        portrait: {
+            areas: `"p1"
+                    "p2"`,
+            cols: '1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                // bottom row
+                p2: '',
+            }
         }
     },
     3: {
-        areas: `"p1 p3" 
-                "p2 p2"`,
-        cols: '1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p3: 'rotate-180',
-            // bottom row
-            p2: '',
+        landscape: {
+            areas: `"p1 p3" 
+                    "p2 p2"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                // bottom row
+                p2: '',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p3"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-90',
+                p2: 'rotate-270',
+                // bottom cap
+                p3: '',
+            }
         }
     },
     4: {
-        areas: `"p1 p3"
-                "p2 p4"`,
-        cols: '1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p3: 'rotate-180',
-            // bottom row
-            p2: '',
-            p4: '',
+        landscape: {
+            areas: `"p1 p3"
+                    "p2 p4"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+            }
         }
     },
     5: {
-        areas: `"p1 p3 p5"
-                "p2 p4 p5"`,
-        cols: '1fr 1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p3: 'rotate-180',
-            // bottom row
-            p2: '',
-            p4: '',
-            // end cap
-            p5: 'rotate-270',
+        landscape: {
+            areas: `"p1 p3 p5"
+                    "p2 p4 p5"`,
+            cols: '1fr 1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+                // end cap
+                p5: 'rotate-270',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"
+                    "p5 p5"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+                // bottom cap
+                p5: '',
+            }
         }
     },
     6: {
-        areas: `"p1 p3 p5"
-                "p2 p4 p6"`,
-        cols: '1fr 1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p3: 'rotate-180',
-            p5: 'rotate-180',
-            // bottom row
-            p2: '',
-            p4: '',
-            p6: '',
+        landscape: {
+            areas: `"p1 p3 p5"
+                    "p2 p4 p6"`,
+            cols: '1fr 1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                p5: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+                p6: '',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"
+                    "p5 p6"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                p5: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+                p6: 'rotate-270',
+            }
         }
     },
     7: {
-        areas: `"p1 p3 p5 p7"
-                "p2 p4 p6 p7"`,
-        cols: '1fr 1fr 1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            //  top row
-            p1: 'rotate-180',
-            p3: 'rotate-180',
-            p5: 'rotate-180',
-            // bottom row
-            p2: '',
-            p4: '',
-            p6: '',
-            // end cap
-            p7: 'rotate-270',
+        landscape: {
+            areas: `"p1 p3 p5 p7"
+                    "p2 p4 p6 p7"`,
+            cols: '1fr 1fr 1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                p5: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+                p6: '',
+                // end cap
+                p7: 'rotate-270',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"
+                    "p5 p6"
+                    "p7 p7"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr 1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                p5: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+                p6: 'rotate-270',
+                // bottom cap
+                p7: '',
+            }
         }
     },
     8: {
-        areas: `"p1 p3 p5 p7"
-                "p2 p4 p6 p8"`,
-        cols: '1fr 1fr 1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p3: 'rotate-180',
-            p5: 'rotate-180',
-            p7: 'rotate-180',
-            // bottom row
-            p2: '',
-            p4: '',
-            p6: '',
-            p8: '',
+        landscape: {
+            areas: `"p1 p3 p5 p7"
+                    "p2 p4 p6 p8"`,
+            cols: '1fr 1fr 1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                p5: 'rotate-180',
+                p7: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+                p6: '',
+                p8: '',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"
+                    "p5 p6"
+                    "p7 p8"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr 1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                p5: 'rotate-90',
+                p7: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+                p6: 'rotate-270',
+                p8: 'rotate-270',
+            }
         }
     },
     9: {
-        areas: `"p1 p3 p5 p7 p9"
-                "p2 p4 p6 p8 p9"`,
-        cols: '1fr 1fr 1fr 1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p2: 'rotate-180',
-            p5: 'rotate-180',
-            p7: 'rotate-180',
-            // bottom row
-            p3: '',
-            p4: '',
-            p6: '',
-            p8: '',
-            // end cap
-            p9: 'rotate-270',
+        landscape: {
+            areas: `"p1 p3 p5 p7 p9"
+                    "p2 p4 p6 p8 p9"`,
+            cols: '1fr 1fr 1fr 1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                p5: 'rotate-180',
+                p7: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+                p6: '',
+                p8: '',
+                // end cap
+                p9: 'rotate-270',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"
+                    "p5 p6"
+                    "p7 p8"
+                    "p9 p9"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr 1fr 1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                p5: 'rotate-90',
+                p7: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+                p6: 'rotate-270',
+                p8: 'rotate-270',
+                // bottom cap
+                p9: '',
+            }
         }
     },
     10: {
-        areas: `"p1 p3 p5 p7 p9"
-                "p2 p4 p6 p8 p10"`,
-        cols: '1fr 1fr 1fr 1fr 1fr',
-        rows: '1fr 1fr',
-        players: {
-            // top row
-            p1: 'rotate-180',
-            p2: 'rotate-180',
-            p5: 'rotate-180',
-            p7: 'rotate-180',
-            p9: 'rotate-180',
-            // bottom row
-            p3: '',
-            p4: '',
-            p6: '',
-            p8: '',
-            p10: '',
+        landscape: {
+            areas: `"p1 p3 p5 p7 p9"
+                    "p2 p4 p6 p8 p10"`,
+            cols: '1fr 1fr 1fr 1fr 1fr',
+            rows: '1fr 1fr',
+            players: {
+                // top row
+                p1: 'rotate-180',
+                p3: 'rotate-180',
+                p5: 'rotate-180',
+                p7: 'rotate-180',
+                p9: 'rotate-180',
+                // bottom row
+                p2: '',
+                p4: '',
+                p6: '',
+                p8: '',
+                p10: '',
+            }
+        },
+        portrait: {
+            areas: `"p1 p2"
+                    "p3 p4"
+                    "p5 p6"
+                    "p7 p8"
+                    "p9 p10"`,
+            cols: '1fr 1fr',
+            rows: '1fr 1fr 1fr 1fr 1fr',
+            players: {
+                // left column
+                p1: 'rotate-90',
+                p3: 'rotate-90',
+                p5: 'rotate-90',
+                p7: 'rotate-90',
+                p9: 'rotate-90',
+                // right column
+                p2: 'rotate-270',
+                p4: 'rotate-270',
+                p6: 'rotate-270',
+                p8: 'rotate-270',
+                p10: 'rotate-270',
+            }
         }
     },
 };
@@ -175,20 +352,23 @@ const MAX_PLAYERS = 10;
 let playerCount = 8; // Draft usually has 8 players.
 
 function applyLayout() {
-    const container = document.querySelector('.container');
-    const players = container.querySelectorAll('.player');
-    const layout = LAYOUTS[players.length];
+    const container = document.querySelector('.container');  // add this
+    const players = container.querySelectorAll('.player');   // add this
+
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    const orientation = isPortrait ? 'portrait' : 'landscape';
+    const layout = LAYOUTS[players.length][orientation];
     if (!layout) return;
 
     const allRotations = ['rotate-90', 'rotate-180', 'rotate-270'];
 
     players.forEach((player, index) => {
         const key = `p${index + 1}`;
-        player.style.gridArea = key; // Set grid-area
+        player.style.gridArea = key;
         const rotationClass = layout.players[key] ?? '';
         const span = player.querySelector('span');
         span.classList.remove(...allRotations);
-        if (rotationClass) span.classList.add(rotationClass); // Set rotation
+        if (rotationClass) span.classList.add(rotationClass);
     });
 
     container.style.gridTemplateAreas = layout.areas;
@@ -340,4 +520,6 @@ document.addEventListener('DOMContentLoaded', () => {
         running = !running;
         border.setSpeed(running ? BORDER_SPEED : 0);
     });
+
+    window.matchMedia("(orientation: portrait)").addEventListener('change', applyLayout);
 });
