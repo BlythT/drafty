@@ -315,16 +315,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDir = 'cw';
 
     // Draft direction arrow border on controls
+    const BORDER_SPEED = 80;
     const border = AnimateBorder(document.getElementById('controls'),
         {
             color: 'black',
             strokeWidth: 15,
             segments: 3,
-            gap: 60,
+            gap: 160,
             segmentCap: 'butt',
             arrowCap: 'butt',
             arrowStyle: 'full',
-            arrowSize: 30
+            arrowSize: 30,
+            speed: BORDER_SPEED,
         });
 
     document.getElementById('reverse-direction').addEventListener('click', () => {
@@ -333,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let running = true;
-    const BORDER_SPEED = 80;
 
     document.getElementById('start-stop-direction').addEventListener('click', () => {
         running = !running;
