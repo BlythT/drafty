@@ -2,8 +2,8 @@
 
 ## MVP
 
-- [ ] Default to 8 players since that's typical draft group
-- [ ] Fix layounts and rotations at each valid player count
+- [x] Default to 8 players since that's typical draft group
+- [x] Fix layounts and rotations at each valid player count
 - [ ] Add "turns"
     - [ ] Configure settings before any turn has started, locked in once draft starts to avoid messing things up, simplify interface
     - [ ] When a turn starts (someone touches the screen (whole screen region or just a timer?)), all timers count down together

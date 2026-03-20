@@ -1,68 +1,170 @@
+/*
+LAYOUTS lets us manually specify the grid-template-areas
+and player rotations manually for each player count.
+*/
 const LAYOUTS = {
     2: {
         areas: '"p1 p2"',
         cols: '1fr 1fr',
-        rows: '1fr'
+        rows: '1fr',
+        players: {
+            // left side
+            p1: 'rotate-90',
+            // right side
+            p2: 'rotate-270',
+        }
+    },
+    3: {
+        areas: '"p1 p2" "p3 p3"',
+        cols: '1fr 1fr',
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            // bottom row
+            p3: '',
+        }
     },
     4: {
         areas: '"p1 p2" "p3 p4"',
         cols: '1fr 1fr',
-        rows: '1fr 1fr'
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            // bottom row
+            p3: '',
+            p4: '',
+        }
     },
     5: {
         areas: '"p1 p2 p5" "p3 p4 p5"',
         cols: '1fr 1fr 1fr',
-        rows: '1fr 1fr'
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            // bottom row
+            p3: '',
+            p4: '',
+            // end cap
+            p5: 'rotate-270',
+        }
     },
     6: {
-        areas: '"p1 p2 p5" "p3 p4 p6"',
+        areas: '"p1 p2 p3" "p4 p5 p6"',
         cols: '1fr 1fr 1fr',
-        rows: '1fr 1fr'
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            p3: 'rotate-180',
+            // bottom row
+            p4: '',
+            p5: '',
+            p6: '',
+        }
     },
     7: {
-        areas: '"p1 p2 p5 p7" "p3 p4 p6 p7"',
+        areas: '"p1 p2 p3 p7" "p4 p5 p6 p7"',
         cols: '1fr 1fr 1fr 1fr',
-        rows: '1fr 1fr'
+        rows: '1fr 1fr',
+        players: {
+            //  top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            p3: 'rotate-180',
+            // bottom row
+            p4: '',
+            p5: '',
+            p6: '',
+            // end cap
+            p7: 'rotate-270',
+        }
     },
     8: {
-        areas: '"p1 p2 p5 p6" "p3 p4 p7 p8"',
+        areas: '"p1 p2 p3 p4" "p5 p6 p7 p8"',
         cols: '1fr 1fr 1fr 1fr',
-        rows: '1fr 1fr'
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            p3: 'rotate-180',
+            p4: 'rotate-180',
+            // bottom row
+            p5: '',
+            p6: '',
+            p7: '',
+            p8: '',
+        }
     },
-};
-
-const ROTATIONS = {
-    2: { p1: 180, p2: 0 },
-    3: { p1: 180, p2: 0, p3: 0 },
-    4: { p1: 180, p2: 180, p3: 0, p4: 0 },
-    5: { p1: 180, p2: 180, p3: 0, p4: 0, p5: 270 },
-    6: { p1: 180, p2: 180, p3: 0, p4: 0, p5: 270, p6: 90 },
-    7: { p1: 180, p2: 180, p3: 0, p4: 0, p5: 270, p6: 270, p7: 90 },
-    8: { p1: 180, p2: 180, p3: 0, p4: 0, p5: 270, p6: 270, p7: 90, p8: 90 },
+    9: {
+        areas: '"p1 p2 p3 p4 p9" "p5 p6 p7 p8 p9"',
+        cols: '1fr 1fr 1fr 1fr 1fr',
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            p3: 'rotate-180',
+            p4: 'rotate-180',
+            // bottom row
+            p5: '',
+            p6: '',
+            p7: '',
+            p8: '',
+            // end cap
+            p9: 'rotate-270',
+        }
+    },
+    10: {
+        areas: '"p1 p2 p3 p4 p5" "p6 p7 p8 p9 p10"',
+        cols: '1fr 1fr 1fr 1fr 1fr',
+        rows: '1fr 1fr',
+        players: {
+            // top row
+            p1: 'rotate-180',
+            p2: 'rotate-180',
+            p3: 'rotate-180',
+            p4: 'rotate-180',
+            p5: 'rotate-180',
+            // bottom row
+            p6: '',
+            p7: '',
+            p8: '',
+            p9: '',
+            p10: '',
+        }
+    },
 };
 
 const TIMER_DURATION = 60;
 const MIN_PLAYERS = 2;
-const MAX_PLAYERS = 8;
+const MAX_PLAYERS = 10;
 
-let playerCount = 4;
+let playerCount = 8; // Draft usually has 8 players.
 
 function applyLayout() {
     const container = document.querySelector('.container');
     const players = container.querySelectorAll('.player');
+    const layout = LAYOUTS[players.length];
+    if (!layout) return;
 
-    players.forEach((player, index) => {
-        player.style.gridArea = `p${index + 1}`;
-    });
+    const allRotations = ['rotate-90', 'rotate-180', 'rotate-270'];
 
     players.forEach((player, index) => {
         const key = `p${index + 1}`;
-        const rotation = ROTATIONS[players.length]?.[key] ?? 0;
-        player.querySelector('span').style.transform = `rotate(${rotation}deg)`;
+        player.style.gridArea = key; // Set grid-area
+        const rotationClass = layout.players[key] ?? '';
+        const span = player.querySelector('span');
+        span.classList.remove(...allRotations);
+        if (rotationClass) span.classList.add(rotationClass); // Set rotation
     });
-
-    const layout = LAYOUTS[players.length];
-    if (!layout) return;
 
     container.style.gridTemplateAreas = layout.areas;
     container.style.gridTemplateColumns = layout.cols;
@@ -123,25 +225,25 @@ function createPlayer(index, total) {
 }
 
 function syncPlayers() {
-  const container = document.querySelector('.container');
-  const players = container.querySelectorAll('.player');
+    const container = document.querySelector('.container');
+    const players = container.querySelectorAll('.player');
 
-  if (players.length < playerCount) {
-    for (let i = players.length; i < playerCount; i++) {
-      container.appendChild(createPlayer(i, playerCount));
+    if (players.length < playerCount) {
+        for (let i = players.length; i < playerCount; i++) {
+            container.appendChild(createPlayer(i, playerCount));
+        }
+    } else if (players.length > playerCount) {
+        for (let i = players.length; i > playerCount; i--) {
+            players[i - 1].remove();
+        }
     }
-  } else if (players.length > playerCount) {
-    for (let i = players.length; i > playerCount; i--) {
-      players[i - 1].remove();
-    }
-  }
 
-  // Recalculate colours for all players when count changes
-  container.querySelectorAll('.player').forEach((player, i) => {
-    player.style.setProperty('--player-color', getPlayerColor(i, playerCount));
-  });
+    // Recalculate colours for all players when count changes
+    container.querySelectorAll('.player').forEach((player, i) => {
+        player.style.setProperty('--player-color', getPlayerColor(i, playerCount));
+    });
 
-  applyLayout();
+    applyLayout();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
