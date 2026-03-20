@@ -12,7 +12,7 @@
       - Every player has paused their timer
       - The time on any timer has run out
     - [ ] Confirmation from player before starting next turn (gives everyone a chance to open their packs, or pause if need a breather, etc)
-- [ ] Add draft direction reminder
+- [x] Add draft direction reminder
   - Starts clockwise
   - Ever-present on screen indicator (subtle animation?)
   - Switches direction each turn (CCW, CW, CCW, etc)

@@ -3,7 +3,9 @@ Josh W Comeau CSS Reset
 */
 
 /* 1. Use a more-intuitive box-sizing model */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -27,18 +29,31 @@ body {
 }
 
 /* 6. Improve media defaults */
-img, picture, video, canvas, svg {
+img,
+picture,
+video,
+canvas,
+svg {
   display: block;
   max-width: 100%;
 }
 
 /* 7. Inherit fonts for form controls */
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
 }
 
 /* 8. Avoid text overflows */
-p, h1, h2, h3, h4, h5, h6 {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   overflow-wrap: break-word;
 }
 
@@ -47,14 +62,20 @@ p {
   text-wrap: pretty;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   text-wrap: balance;
 }
 
 /*
   10. Create a root stacking context
 */
-#root, #__next {
+#root,
+#__next {
   isolation: isolate;
 }
 
@@ -63,67 +84,72 @@ My styles
 */
 
 .container {
-    font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
-    position: relative;
-    display: grid;
-    gap: 1em;
-    height: 100dvh;
-    background-color: black;
+  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+  position: relative;
+  display: grid;
+  gap: 1em;
+  height: 100dvh;
+  background-color: black;
 }
 
 .player {
-    background-color: var(--player-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    font-size: 4em;
+  background-color: var(--player-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-size: 4em;
 }
 
 .player--active {
-    filter: brightness(1.2);
+  filter: brightness(1.2);
 }
 
 .player:hover {
-    filter: brightness(1.1);
+  filter: brightness(1.1);
 }
 
 .player:active {
-    filter: brightness(0.9);
+  filter: brightness(0.9);
 }
 
-.rotate-90  { transform: rotate(90deg);  }
-.rotate-180 { transform: rotate(180deg); }
-.rotate-270 { transform: rotate(270deg); }
+.rotate-90 {
+  transform: rotate(90deg);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.rotate-270 {
+  transform: rotate(270deg);
+}
 
 #controls {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    background-color: darkgrey;
-    border: 2px solid grey;
-    border-radius: 0.5em;
-    padding: 0.5em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background-color: darkgrey;
+  border: 2px solid grey;
+  border-radius: 0.5em;
+  padding: 1em 1.5em;
 }
 
 #controls fieldset {
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 #controls button {
-    width: 2em;
-    height: 2em;
-    padding: 0;
-    cursor: pointer;
-    /* make sure text is in the middle */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+  padding: 0.25em 0.5em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }

@@ -311,4 +311,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     syncPlayers();
+
+    let currentDir = 'cw';
+
+    // Draft direction arrow border on controls
+    const border = AnimateBorder(document.getElementById('controls'),
+        {
+            color: 'black',
+            strokeWidth: 15,
+            segments: 3,
+            gap: 60,
+            segmentCap: 'butt',
+            arrowCap: 'butt',
+            arrowStyle: 'full',
+            arrowSize: 30
+        });
+
+    document.getElementById('reverse-direction').addEventListener('click', () => {
+        currentDir = currentDir === 'cw' ? 'ccw' : 'cw';
+        border.setDirection(currentDir);
+    });
+
+    let running = true;
+    const BORDER_SPEED = 80;
+
+    document.getElementById('start-stop-direction').addEventListener('click', () => {
+        running = !running;
+        border.setSpeed(running ? BORDER_SPEED : 0);
+    });
 });
