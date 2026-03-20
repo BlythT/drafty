@@ -1,10 +1,27 @@
 /*
 LAYOUTS lets us manually specify the grid-template-areas
 and player rotations manually for each player count.
+
+Originally I just numbered evenly across top and bottom
+e.g. p1 p2 p3 p7
+     p4 p5 p6 p7
+
+However I didn't like how the colours "jump around" when
+switching to the next player count
+e.g. p1 p2 p3 p4
+     p5 p6 p7 p8
+
+See above how p4 goes from bottom left to top right? This happens often.
+
+Whereas you can preserve stable ordering if you do odds-on-top, evens-on-bottom
+p1 p3
+p2 p4
+and so on, for stable colours.
+Makes these layouts slightly less simple, but worth it for the end result.
 */
 const LAYOUTS = {
     2: {
-        areas: '"p1 p2"',
+        areas: `"p1 p2"`,
         cols: '1fr 1fr',
         rows: '1fr',
         players: {
@@ -15,7 +32,8 @@ const LAYOUTS = {
         }
     },
     3: {
-        areas: '"p1 p2" "p3 p3"',
+        areas: `"p1 p3" 
+                "p2 p2"`,
         cols: '1fr 1fr',
         rows: '1fr 1fr',
         players: {
@@ -27,117 +45,124 @@ const LAYOUTS = {
         }
     },
     4: {
-        areas: '"p1 p2" "p3 p4"',
+        areas: `"p1 p3"
+                "p2 p4"`,
         cols: '1fr 1fr',
         rows: '1fr 1fr',
         players: {
             // top row
             p1: 'rotate-180',
-            p2: 'rotate-180',
+            p3: 'rotate-180',
             // bottom row
-            p3: '',
+            p2: '',
             p4: '',
         }
     },
     5: {
-        areas: '"p1 p2 p5" "p3 p4 p5"',
+        areas: `"p1 p3 p5"
+                "p2 p4 p5"`,
         cols: '1fr 1fr 1fr',
         rows: '1fr 1fr',
         players: {
             // top row
             p1: 'rotate-180',
-            p2: 'rotate-180',
+            p3: 'rotate-180',
             // bottom row
-            p3: '',
+            p2: '',
             p4: '',
             // end cap
             p5: 'rotate-270',
         }
     },
     6: {
-        areas: '"p1 p2 p3" "p4 p5 p6"',
+        areas: `"p1 p3 p5"
+                "p2 p4 p6"`,
         cols: '1fr 1fr 1fr',
         rows: '1fr 1fr',
         players: {
             // top row
             p1: 'rotate-180',
-            p2: 'rotate-180',
             p3: 'rotate-180',
+            p5: 'rotate-180',
             // bottom row
+            p2: '',
             p4: '',
-            p5: '',
             p6: '',
         }
     },
     7: {
-        areas: '"p1 p2 p3 p7" "p4 p5 p6 p7"',
+        areas: `"p1 p3 p5 p7"
+                "p2 p4 p6 p7"`,
         cols: '1fr 1fr 1fr 1fr',
         rows: '1fr 1fr',
         players: {
             //  top row
             p1: 'rotate-180',
-            p2: 'rotate-180',
             p3: 'rotate-180',
+            p5: 'rotate-180',
             // bottom row
+            p2: '',
             p4: '',
-            p5: '',
             p6: '',
             // end cap
             p7: 'rotate-270',
         }
     },
     8: {
-        areas: '"p1 p2 p3 p4" "p5 p6 p7 p8"',
+        areas: `"p1 p3 p5 p7"
+                "p2 p4 p6 p8"`,
         cols: '1fr 1fr 1fr 1fr',
         rows: '1fr 1fr',
         players: {
             // top row
             p1: 'rotate-180',
-            p2: 'rotate-180',
             p3: 'rotate-180',
-            p4: 'rotate-180',
+            p5: 'rotate-180',
+            p7: 'rotate-180',
             // bottom row
-            p5: '',
+            p2: '',
+            p4: '',
             p6: '',
-            p7: '',
             p8: '',
         }
     },
     9: {
-        areas: '"p1 p2 p3 p4 p9" "p5 p6 p7 p8 p9"',
+        areas: `"p1 p3 p5 p7 p9"
+                "p2 p4 p6 p8 p9"`,
         cols: '1fr 1fr 1fr 1fr 1fr',
         rows: '1fr 1fr',
         players: {
             // top row
             p1: 'rotate-180',
             p2: 'rotate-180',
-            p3: 'rotate-180',
-            p4: 'rotate-180',
+            p5: 'rotate-180',
+            p7: 'rotate-180',
             // bottom row
-            p5: '',
+            p3: '',
+            p4: '',
             p6: '',
-            p7: '',
             p8: '',
             // end cap
             p9: 'rotate-270',
         }
     },
     10: {
-        areas: '"p1 p2 p3 p4 p5" "p6 p7 p8 p9 p10"',
+        areas: `"p1 p3 p5 p7 p9"
+                "p2 p4 p6 p8 p10"`,
         cols: '1fr 1fr 1fr 1fr 1fr',
         rows: '1fr 1fr',
         players: {
             // top row
             p1: 'rotate-180',
             p2: 'rotate-180',
-            p3: 'rotate-180',
-            p4: 'rotate-180',
             p5: 'rotate-180',
+            p7: 'rotate-180',
+            p9: 'rotate-180',
             // bottom row
+            p3: '',
+            p4: '',
             p6: '',
-            p7: '',
             p8: '',
-            p9: '',
             p10: '',
         }
     },
