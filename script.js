@@ -39,9 +39,9 @@ const LAYOUTS = {
         players: {
             // top row
             p1: 'rotate-180',
-            p2: 'rotate-180',
+            p3: 'rotate-180',
             // bottom row
-            p3: '',
+            p2: '',
         }
     },
     4: {
