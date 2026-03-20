@@ -17,6 +17,8 @@
   - Ever-present on screen indicator (subtle animation?)
   - Switches direction each turn (CCW, CW, CCW, etc)
 - [ ] Configurable timer
+- [x] [Host with GitHub pages](https://github.com/BlythT/drafty))
+- [x] Enable progressive webapp installation for Android and iOS.
 
 ## Nice to have
 
