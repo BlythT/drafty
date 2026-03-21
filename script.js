@@ -153,14 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const BORDER_SPEED = 80;
     const border = AnimateBorder(document.getElementById('controls'),
         {
-            color: 'black',
-            strokeWidth: 15,
+            color: 'white',
+            strokeWidth: 10,
             segments: 3,
             gap: 160,
-            segmentCap: 'butt',
+            segmentCap: 'round',
             arrowCap: 'butt',
-            arrowStyle: 'full',
-            arrowSize: 30,
+            arrowStyle: 'outlined',
+            arrowSize: 20,
             speed: BORDER_SPEED,
         });
 
