@@ -44,8 +44,8 @@ function formatTime(seconds) {
 // oklab colour generator had
 const PLAYER_COLORS = [
     { color: '#4269D0', name: 'blue' },
-    { color: '#EFB118', name: 'yellow' },
     { color: '#FF725C', name: 'orange' },
+    { color: '#EFB118', name: 'yellow' },
     { color: '#6CC5B0', name: 'teal' },
     { color: '#3CA951', name: 'green' },
     { color: '#FF8AB7', name: 'pink' },
