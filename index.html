@@ -14,11 +14,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
     <link rel="manifest" href="site.webmanifest" />
     <!-- FavIcon -->
+    <meta name="apple-mobile-web-app-title" content="Drafty" />
     <link rel="icon" type="image/png" href="assets/icon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="assets/icon/favicon.svg" />
     <link rel="shortcut icon" href="assets/icon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icon/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Drafty" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -26,17 +26,32 @@
 <body>
     <main>
         <div class="container">
-            <div id="controls">
-                <fieldset>
-                    <legend>Players</legend>
-                    <button id="remove-player">-</button>
-                    <button id="add-player">+</button>
-                </fieldset>
-                <fieldset>
-                    <legend>Direction</legend>
-                    <button id="reverse-direction">Reverse</button>
-                    <button id="start-stop-direction">Start/Stop</button>
-                </fieldset>
+            <div id="controls-wrapper">
+                <div id="controls">
+                    <!-- State 1: Setup - pick player count -->
+                    <div id="setup-buttons">
+                        <button id="remove-player" class="half left" aria-label="Remove player">-</button>
+                        <button id="add-player" class="half right" aria-label="Add player">+</button>
+                    </div>
+
+                    <!-- State 2: Ready - waiting to start -->
+                    <div id="state-ready" class="control-state" hidden>
+                        <label>EVERYONE READY?</label>
+                    </div>
+
+                    <!-- State 3: Drafting - shows round, border animates -->
+                    <div id="state-drafting" class="control-state" hidden>
+                        <output id="round-display">R1</output>
+                    </div>
+                </div>
+
+                <div id="state-setup" class="control-state">
+                    <div class="overlay" aria-hidden="true">
+                        <div class="divider"></div>
+                        <output id="player-count-display" class="center-label">8</output>
+                    </div>
+                </div>
+                <button id="confirm-players" class="confirm" aria-label="Confirm players">&check;</button>
             </div>
         </div>
     </main>

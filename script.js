@@ -3,8 +3,13 @@ import { LAYOUTS } from './layouts.js';
 const TIMER_DURATION = 60;
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
+const BORDER_SPEED = 80;
 
 let playerCount = 8; // Draft usually has 8 players.
+
+function updatePlayerCountDisplay() {
+    document.getElementById('player-count-display').value = playerCount;
+}
 
 function applyLayout() {
     const container = document.querySelector('.container');  // add this
@@ -12,7 +17,7 @@ function applyLayout() {
 
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     const orientation = isPortrait ? 'portrait' : 'landscape';
-    const layout = LAYOUTS[players.length][orientation];
+    const layout = LAYOUTS[players.length]?.[orientation];
     if (!layout) return;
 
     const allRotations = ['rotate-90', 'rotate-180', 'rotate-270'];
@@ -63,8 +68,10 @@ function createPlayer(index, total) {
     const player = document.createElement('button');
     player.classList.add('player');
     player.style.setProperty('--player-color', getPlayerColor(index, total).color);
+    player.dataset.playerIndex = index;
 
     const span = document.createElement('span');
+    span.classList.add('player-label');
     player.appendChild(span);
 
     let secondsLeft = TIMER_DURATION;
@@ -118,6 +125,7 @@ function syncPlayers() {
     // Recalculate colours for all players when count changes
     container.querySelectorAll('.player').forEach((player, i) => {
         player.style.setProperty('--player-color', getPlayerColor(i, playerCount).color);
+        player.dataset.playerIndex = i;
     });
 
     applyLayout();
@@ -127,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.container');
 
     container.querySelectorAll('.player').forEach(player => player.remove());
+    updatePlayerCountDisplay();
 
     const addBtn = document.querySelector('#add-player');
     const removeBtn = document.querySelector('#remove-player');
@@ -134,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addBtn.addEventListener('click', () => {
         if (playerCount < MAX_PLAYERS) {
             playerCount++;
+            updatePlayerCountDisplay();
             syncPlayers();
         }
     });
@@ -141,21 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
     removeBtn.addEventListener('click', () => {
         if (playerCount > MIN_PLAYERS) {
             playerCount--;
+            updatePlayerCountDisplay();
             syncPlayers();
         }
     });
 
     syncPlayers();
 
-    let currentDir = 'cw';
-
     // Draft direction arrow border on controls
-    const BORDER_SPEED = 80;
-    const border = AnimateBorder(document.getElementById('controls'),
+    AnimateBorder(document.getElementById('controls-wrapper'),
         {
             color: 'white',
             strokeWidth: 10,
-            segments: 3,
+            segments: 1,
             gap: 160,
             segmentCap: 'round',
             arrowCap: 'butt',
@@ -163,18 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
             arrowSize: 20,
             speed: BORDER_SPEED,
         });
-
-    document.getElementById('reverse-direction').addEventListener('click', () => {
-        currentDir = currentDir === 'cw' ? 'ccw' : 'cw';
-        border.setDirection(currentDir);
-    });
-
-    let running = true;
-
-    document.getElementById('start-stop-direction').addEventListener('click', () => {
-        running = !running;
-        border.setSpeed(running ? BORDER_SPEED : 0);
-    });
 
     window.matchMedia("(orientation: portrait)").addEventListener('change', applyLayout);
 });
