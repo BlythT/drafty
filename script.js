@@ -48,8 +48,8 @@ function updateCenterControl(state) {
         return;
     }
 
-    primary.textContent = `Round ${roundNumber}`;
-    secondary.textContent = roundNumber % 2 === 1 ? 'Clockwise' : 'Counterclockwise';
+    primary.textContent = `ROUND ${roundNumber}`;
+    secondary.textContent = 'Tap When Done';
     centerControl.setAttribute('aria-label', `Round ${roundNumber}`);
 }
 
@@ -195,7 +195,7 @@ function createPlayer(index) {
         if (activated) return;
         activated = true;
         player.classList.add('player--active');
-        span.textContent = 'READY';
+        span.textContent = 'DONE';
         onPlayerActivated(Number(player.dataset.playerIndex));
     });
 
@@ -293,13 +293,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     border = AnimateBorder(document.getElementById('controls-wrapper'), {
         color: 'white',
-        strokeWidth: 10,
+        arrowOutlineColor: getComputedStyle(document.documentElement)
+            .getPropertyValue('--color-bg')
+            .trim(),
+        strokeWidth: 14,
         segments: 1,
         gap: 160,
         segmentCap: 'round',
         arrowCap: 'butt',
         arrowStyle: 'outlined',
-        arrowSize: 20,
+        arrowSize: 26,
         speed: 0, // starts stopped; state machine controls this
     });
 
