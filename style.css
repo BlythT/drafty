@@ -84,23 +84,24 @@ My styles
 */
 
 :root {
-  --color-bg: black;
-  --color-controls-bg: darkgrey;
-  --color-controls-accent: grey;
-  --color-text-strong: white;
+  --color-bg: #0f1115;
+  --color-controls-bg: #45515f;
+  --color-text-strong: #f3f5f7;
+  --color-center-control-bg: #f3f5f7;
+  --color-center-control-text: #11151c;
   --grid-gap: clamp(0.5rem, 2vmin, 1rem);
   --player-radius: clamp(0.75rem, 2.5vmin, 1.5rem);
   --player-font-size: clamp(1rem, 5vmin, 4rem);
-  --controls-size: 20vmin;
+  --controls-size: 30vmin;
   --controls-radius: 200%;
   --controls-border-width: var(--grid-gap);
   --controls-border-color: var(--color-bg);
   --controls-border: var(--controls-border-width) solid var(--controls-border-color);
   --center-control-size: 42%;
   --center-control-padding: 0.35rem;
-  --center-control-gap: 0.125rem;
-  --center-control-primary-size: clamp(1.2rem, 3.5vmin, 2rem);
-  --center-control-secondary-size: clamp(0.5rem, 1.25vmin, 0.72rem);
+  --center-control-gap: 0.35rem;
+  --center-control-primary-size: clamp(1.6rem, 4.5vmin, 2.75rem);
+  --center-control-secondary-size: clamp(0.65rem, 1.7vmin, 0.95rem);
   --center-control-content-shift: -8%;
   --side-control-width: 58%;
   --side-control-overflow: 8%;
@@ -208,6 +209,7 @@ My styles
 
 .left {
   left: calc(-1 * var(--side-control-overflow));
+  border-right: 2px solid var(--color-bg);
   justify-content: flex-start;
 }
 
@@ -224,10 +226,10 @@ My styles
   z-index: 1;
   width: var(--center-control-size);
   height: var(--center-control-size);
-  border: 0;
+  border: 2px solid var(--color-bg);
   border-radius: 50%;
-  background-color: var(--color-controls-bg);
-  color: var(--color-text-strong);
+  background-color: var(--color-center-control-bg);
+  color: var(--color-center-control-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,17 +288,7 @@ My styles
   z-index: 2;
 }
 
-.divider {
-  position: absolute;
-  left: 50%;
-  top: var(--divider-inset);
-  bottom: var(--divider-inset);
-  width: 1px;
-  transform: translateX(-50%);
-  background: var(--color-controls-accent);
-}
-
-.overlay.divider-hidden .divider {
+.overlay.divider-hidden {
   display: none;
 }
 
