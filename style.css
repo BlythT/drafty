@@ -96,10 +96,16 @@ My styles
   --controls-border-width: var(--grid-gap);
   --controls-border-color: var(--color-bg);
   --controls-border: var(--controls-border-width) solid var(--controls-border-color);
-  --controls-confirm-size: 25%;
-  --controls-confirm-offset: -10%;
-  --controls-ready-gap: 0.5rem;
-  --center-label-padding: 0.125rem 0.4rem;
+  --center-control-size: 42%;
+  --center-control-padding: 0.35rem;
+  --center-control-gap: 0.125rem;
+  --center-control-primary-size: clamp(1.2rem, 3.5vmin, 2rem);
+  --center-control-secondary-size: clamp(0.5rem, 1.25vmin, 0.72rem);
+  --center-control-content-shift: -8%;
+  --side-control-width: 58%;
+  --side-control-overflow: 8%;
+  --side-control-font-size: clamp(1.4rem, 4.5vmin, 2.8rem);
+  --side-control-label-shift: 18%;
   --divider-inset: 10%;
   --button-hover-brightness: 1.1;
   --button-active-brightness: 0.9;
@@ -187,59 +193,86 @@ My styles
   }
 }
 
-.control-state,
 #setup-buttons {
   position: absolute;
   inset: 0;
 }
 
-#state-setup {
-  pointer-events: none;
-}
-
-.control-state[hidden],
-#setup-buttons[hidden],
-.confirm[hidden] {
-  display: none !important;
-}
-
-#state-ready,
-#state-drafting {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-#state-ready {
-  flex-direction: column;
-  gap: var(--controls-ready-gap);
-}
-
 .half {
   position: absolute;
   top: 0;
-  width: 50%;
+  width: var(--side-control-width);
   height: 100%;
+  font-size: var(--side-control-font-size);
 }
 
 .left {
-  left: 0;
+  left: calc(-1 * var(--side-control-overflow));
+  justify-content: flex-start;
 }
 
 .right {
-  right: 0;
+  right: calc(-1 * var(--side-control-overflow));
+  justify-content: flex-end;
 }
 
-.center-label {
+#center-control {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 2;
-  padding: var(--center-label-padding);
+  z-index: 1;
+  width: var(--center-control-size);
+  height: var(--center-control-size);
+  border: 0;
+  border-radius: 50%;
   background-color: var(--color-controls-bg);
+  color: var(--color-text-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--center-control-padding);
+  text-align: center;
+  line-height: 1;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+#center-control-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--center-control-gap);
+  transform: translateY(var(--center-control-content-shift));
+}
+
+#center-control:hover {
+  filter: brightness(var(--button-hover-brightness));
+}
+
+#center-control:active {
+  filter: brightness(var(--button-active-brightness));
+}
+
+#center-control[disabled] {
+  cursor: default;
+}
+
+#center-control.is-full {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+#center-control-primary {
+  font-size: var(--center-control-primary-size);
+  font-weight: 500;
+}
+
+#center-control-secondary {
+  font-size: var(--center-control-secondary-size);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .overlay {
@@ -247,6 +280,10 @@ My styles
   inset: 0;
   border-radius: var(--controls-radius);
   pointer-events: none;
+}
+
+#controls-wrapper > svg {
+  z-index: 2;
 }
 
 .divider {
@@ -259,6 +296,10 @@ My styles
   background: var(--color-controls-accent);
 }
 
+.overlay.divider-hidden .divider {
+  display: none;
+}
+
 #controls button {
   padding: 0.25em 0.5em;
   cursor: pointer;
@@ -268,25 +309,18 @@ My styles
   line-height: 1;
 }
 
-.confirm {
-  position: absolute;
-  left: 50%;
-  bottom: var(--controls-confirm-offset);
-  transform: translateX(-50%);
-  width: var(--controls-confirm-size);
-  height: var(--controls-confirm-size);
-  border-radius: 50%;
-  outline: var(--controls-border);
-  background-color: var(--color-controls-bg);
-  z-index: 4;
-  pointer-events: auto;
-  transition: filter 120ms ease;
+#setup-buttons button {
+  padding: 0;
 }
 
-.confirm:hover {
-  filter: brightness(var(--button-hover-brightness));
+.side-control-label {
+  display: block;
 }
 
-.confirm:active {
-  filter: brightness(var(--button-active-brightness));
+.left .side-control-label {
+  transform: translateX(calc(-1 * var(--side-control-label-shift)));
+}
+
+.right .side-control-label {
+  transform: translateX(var(--side-control-label-shift));
 }

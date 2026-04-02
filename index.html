@@ -30,28 +30,21 @@
                 <div id="controls">
                     <!-- State 1: Setup - pick player count -->
                     <div id="setup-buttons">
-                        <button id="remove-player" class="half left" aria-label="Remove player">-</button>
-                        <button id="add-player" class="half right" aria-label="Add player">+</button>
+                        <button id="remove-player" class="half left" aria-label="Remove player"><span class="side-control-label">-</span></button>
+                        <button id="add-player" class="half right" aria-label="Add player"><span class="side-control-label">+</span></button>
                     </div>
 
-                    <!-- State 2: Ready - waiting to start -->
-                    <div id="state-ready" class="control-state" hidden>
-                        <label>EVERYONE READY?</label>
-                    </div>
-
-                    <!-- State 3: Drafting - shows round, border animates -->
-                    <div id="state-drafting" class="control-state" hidden>
-                        <output id="round-display">R1</output>
-                    </div>
+                    <button id="center-control" type="button" aria-live="polite" aria-label="Confirm players">
+                        <span id="center-control-content">
+                            <span id="center-control-primary">8</span>
+                            <span id="center-control-secondary">Confirm</span>
+                        </span>
+                    </button>
                 </div>
 
-                <div id="state-setup" class="control-state">
-                    <div class="overlay" aria-hidden="true">
-                        <div class="divider"></div>
-                        <output id="player-count-display" class="center-label">8</output>
-                    </div>
+                <div class="overlay" aria-hidden="true">
+                    <div class="divider"></div>
                 </div>
-                <button id="confirm-players" class="confirm" aria-label="Confirm players">&check;</button>
             </div>
         </div>
     </main>

@@ -24,18 +24,33 @@ let roundNumber = 0;
 /** Indices of players who have tapped their button this round. */
 let activatedThisRound = new Set();
 
-function updateConfirmButton(state) {
-    const confirmButton = document.getElementById('confirm-players');
-    confirmButton.hidden = state === State.DRAFTING;
+function updateCenterControl(state) {
+    const centerControl = document.getElementById('center-control');
+    const primary = document.getElementById('center-control-primary');
+    const secondary = document.getElementById('center-control-secondary');
+    const overlay = document.querySelector('.overlay');
 
-    if (state === State.READY) {
-        confirmButton.innerHTML = '&#9654;';
-        confirmButton.setAttribute('aria-label', 'Start draft');
+    centerControl.disabled = state === State.DRAFTING;
+    centerControl.classList.toggle('is-full', state !== State.SETUP);
+    overlay.classList.toggle('divider-hidden', state !== State.SETUP);
+
+    if (state === State.SETUP) {
+        primary.textContent = String(playerCount);
+        secondary.textContent = 'Confirm';
+        centerControl.setAttribute('aria-label', `Confirm ${playerCount} players`);
         return;
     }
 
-    confirmButton.innerHTML = '&check;';
-    confirmButton.setAttribute('aria-label', 'Confirm players');
+    if (state === State.READY) {
+        primary.textContent = 'Start';
+        secondary.textContent = 'Draft';
+        centerControl.setAttribute('aria-label', 'Start draft');
+        return;
+    }
+
+    primary.textContent = `Round ${roundNumber}`;
+    secondary.textContent = roundNumber % 2 === 1 ? 'Clockwise' : 'Counterclockwise';
+    centerControl.setAttribute('aria-label', `Round ${roundNumber}`);
 }
 
 /**
@@ -43,11 +58,7 @@ function updateConfirmButton(state) {
  * entry logic for the incoming state.
  */
 function setState(next) {
-    document.querySelectorAll('.control-state').forEach(el => {
-        el.hidden = el.id !== `state-${next}`;
-    });
     document.getElementById('setup-buttons').hidden = next !== State.SETUP;
-    updateConfirmButton(next);
 
     appState = next;
 
@@ -60,11 +71,13 @@ function setState(next) {
         case State.SETUP:
             border.setSpeed(0);
             disablePlayers();
+            updateCenterControl(next);
             break;
 
         case State.READY:
             border.setSpeed(0);
             disablePlayers();
+            updateCenterControl(next);
             break;
 
         case State.DRAFTING: {
@@ -77,8 +90,7 @@ function setState(next) {
             const dir = roundNumber % 2 === 1 ? 'cw' : 'ccw';
             border.setDirection(dir);
             border.setSpeed(BORDER_SPEED);
-
-            document.getElementById('round-display').textContent = `Round ${roundNumber}${dir === 'cw' ? 'Clockwise' : 'Counterclockwise'}`;
+            updateCenterControl(next);
             break;
         }
     }
@@ -106,7 +118,9 @@ function onPlayerActivated(playerIndex) {
 let playerCount = 8;
 
 function updatePlayerCountDisplay() {
-    document.getElementById('player-count-display').value = playerCount;
+    if (appState === State.SETUP) {
+        updateCenterControl(State.SETUP);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -267,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('confirm-players').addEventListener('click', () => {
+    document.getElementById('center-control').addEventListener('click', () => {
         if (appState === State.SETUP) {
             setState(State.READY);
         } else if (appState === State.READY) {
