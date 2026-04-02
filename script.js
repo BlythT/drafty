@@ -15,12 +15,15 @@ const BORDER_SPEED = 80;
 const State = {
     SETUP: 'setup',
     READY: 'ready',
+    COUNTDOWN: 'countdown',
     DRAFTING: 'drafting',
 };
 
 let appState = State.SETUP;
 let roundNumber = 0;
 let borderDirection = 'cw';
+let countdownValue = 3;
+let countdownIntervalId = null;
 
 const CenterControlMode = {
     COMPACT: 'compact',
@@ -36,7 +39,7 @@ function updateCenterControl(state) {
     const secondary = document.getElementById('center-control-secondary');
     const overlay = document.querySelector('.overlay');
 
-    centerControl.disabled = state === State.DRAFTING;
+    centerControl.disabled = state === State.DRAFTING || state === State.COUNTDOWN;
 
     const mode = state === State.SETUP ? CenterControlMode.COMPACT : CenterControlMode.FULL;
     setCenterControlMode(mode, {
@@ -53,13 +56,20 @@ function updateCenterControl(state) {
 
     if (state === State.READY) {
         primary.textContent = 'Start';
-        secondary.textContent = 'Draft';
-        centerControl.setAttribute('aria-label', 'Start draft');
+        secondary.textContent = `Round ${roundNumber + 1}`;
+        centerControl.setAttribute('aria-label', `Start round ${roundNumber + 1}`);
+        return;
+    }
+
+    if (state === State.COUNTDOWN) {
+        primary.textContent = String(countdownValue);
+        secondary.textContent = `Round ${roundNumber + 1}`;
+        centerControl.setAttribute('aria-label', `Round ${roundNumber + 1} begins in ${countdownValue}`);
         return;
     }
 
     primary.textContent = `ROUND ${roundNumber}`;
-    secondary.textContent = 'Tap Your Square When Done';
+    secondary.textContent = 'Tap Your Tile When Done';
     centerControl.setAttribute('aria-label', `Round ${roundNumber}`);
 }
 
@@ -69,6 +79,29 @@ function setCenterControlMode(mode, options = {}) {
     centerControl.classList.toggle('is-compact', mode === CenterControlMode.COMPACT);
     centerControl.classList.toggle('is-full', mode === CenterControlMode.FULL);
     centerControl.classList.toggle('wrap-secondary', Boolean(options.wrapSecondary));
+}
+
+function clearCountdown() {
+    clearInterval(countdownIntervalId);
+    countdownIntervalId = null;
+}
+
+function startCountdown() {
+    clearCountdown();
+    countdownValue = 3;
+    updateCenterControl(State.COUNTDOWN);
+
+    countdownIntervalId = setInterval(() => {
+        countdownValue -= 1;
+
+        if (countdownValue <= 0) {
+            clearCountdown();
+            setState(State.DRAFTING);
+            return;
+        }
+
+        updateCenterControl(State.COUNTDOWN);
+    }, 1000);
 }
 
 /**
@@ -87,18 +120,28 @@ function setState(next) {
 
     switch (next) {
         case State.SETUP:
+            clearCountdown();
             border.setSpeed(0);
             disablePlayers();
             updateCenterControl(next);
             break;
 
         case State.READY:
+            clearCountdown();
             border.setSpeed(0);
             disablePlayers();
             updateCenterControl(next);
             break;
 
+        case State.COUNTDOWN:
+            borderDirection = (roundNumber + 1) % 2 === 1 ? 'cw' : 'ccw';
+            syncBorderState();
+            disablePlayers();
+            startCountdown();
+            break;
+
         case State.DRAFTING: {
+            clearCountdown();
             roundNumber++;
             activatedThisRound = new Set();
             resetPlayerRounds();
@@ -127,6 +170,12 @@ function onPlayerActivated(playerIndex) {
         // Brief pause so the last player can see their timer start.
         setTimeout(() => setState(State.READY), 600);
     }
+}
+
+function onPlayerDeactivated(playerIndex) {
+    if (appState !== State.DRAFTING) return;
+
+    activatedThisRound.delete(playerIndex);
 }
 
 // ---------------------------------------------------------------------------
@@ -210,11 +259,22 @@ function createPlayer(index) {
     let activated = false;
 
     player.addEventListener('click', () => {
-        if (activated) return;
-        activated = true;
-        player.classList.add('player--active');
-        span.textContent = 'DONE';
-        onPlayerActivated(Number(player.dataset.playerIndex));
+        const playerIndex = Number(player.dataset.playerIndex);
+
+        if (!activated) {
+            activated = true;
+            player.classList.add('player--active');
+            span.textContent = 'DONE';
+            onPlayerActivated(playerIndex);
+            return;
+        }
+
+        if (appState !== State.DRAFTING) return;
+
+        activated = false;
+        player.classList.remove('player--active');
+        span.textContent = `P${playerIndex + 1}`;
+        onPlayerDeactivated(playerIndex);
     });
 
     player.resetRound = () => {
@@ -293,6 +353,12 @@ function syncBorderState() {
         return;
     }
 
+    if (appState === State.COUNTDOWN) {
+        border.setDirection(borderDirection);
+        border.setSpeed(0);
+        return;
+    }
+
     border.setSpeed(0);
 }
 
@@ -352,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (appState === State.SETUP) {
             setState(State.READY);
         } else if (appState === State.READY) {
-            setState(State.DRAFTING);
+            setState(State.COUNTDOWN);
         }
     });
 
