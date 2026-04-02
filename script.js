@@ -20,6 +20,12 @@ const State = {
 
 let appState = State.SETUP;
 let roundNumber = 0;
+let borderDirection = 'cw';
+
+const CenterControlMode = {
+    COMPACT: 'compact',
+    FULL: 'full',
+};
 
 /** Indices of players who have tapped their button this round. */
 let activatedThisRound = new Set();
@@ -31,8 +37,12 @@ function updateCenterControl(state) {
     const overlay = document.querySelector('.overlay');
 
     centerControl.disabled = state === State.DRAFTING;
-    centerControl.classList.toggle('is-full', state !== State.SETUP);
-    overlay.classList.toggle('divider-hidden', state !== State.SETUP);
+
+    const mode = state === State.SETUP ? CenterControlMode.COMPACT : CenterControlMode.FULL;
+    setCenterControlMode(mode, {
+        wrapSecondary: state === State.DRAFTING,
+    });
+    overlay.classList.toggle('divider-hidden', mode === CenterControlMode.FULL);
 
     if (state === State.SETUP) {
         primary.textContent = String(playerCount);
@@ -49,8 +59,16 @@ function updateCenterControl(state) {
     }
 
     primary.textContent = `ROUND ${roundNumber}`;
-    secondary.textContent = 'Tap When Done';
+    secondary.textContent = 'Tap Your Square When Done';
     centerControl.setAttribute('aria-label', `Round ${roundNumber}`);
+}
+
+function setCenterControlMode(mode, options = {}) {
+    const centerControl = document.getElementById('center-control');
+
+    centerControl.classList.toggle('is-compact', mode === CenterControlMode.COMPACT);
+    centerControl.classList.toggle('is-full', mode === CenterControlMode.FULL);
+    centerControl.classList.toggle('wrap-secondary', Boolean(options.wrapSecondary));
 }
 
 /**
@@ -88,8 +106,8 @@ function setState(next) {
 
             // Direction alternates: odd rounds CW, even rounds CCW.
             const dir = roundNumber % 2 === 1 ? 'cw' : 'ccw';
-            border.setDirection(dir);
-            border.setSpeed(BORDER_SPEED);
+            borderDirection = dir;
+            syncBorderState();
             updateCenterControl(next);
             break;
         }
@@ -251,6 +269,54 @@ function resetPlayerRounds() {
 
 let border;
 
+function readCssNumber(name) {
+    const probe = document.createElement('div');
+    probe.style.position = 'absolute';
+    probe.style.visibility = 'hidden';
+    probe.style.pointerEvents = 'none';
+    probe.style.width = `var(${name})`;
+
+    const host = document.getElementById('controls-wrapper');
+    host.appendChild(probe);
+    const value = probe.getBoundingClientRect().width;
+    probe.remove();
+
+    return value;
+}
+
+function syncBorderState() {
+    if (!border) return;
+
+    if (appState === State.DRAFTING) {
+        border.setDirection(borderDirection);
+        border.setSpeed(BORDER_SPEED);
+        return;
+    }
+
+    border.setSpeed(0);
+}
+
+function rebuildBorder() {
+    border?.destroy();
+    const rootStyle = getComputedStyle(document.documentElement);
+    border = AnimateBorder(
+        document.getElementById('controls-wrapper'),
+        {
+            color: 'white',
+            arrowOutlineColor: rootStyle.getPropertyValue('--color-bg').trim(),
+            strokeWidth: readCssNumber('--border-stroke-width'),
+            segments: 1,
+            gap: readCssNumber('--border-gap'),
+            segmentCap: 'round',
+            arrowCap: 'butt',
+            arrowStyle: 'outlined',
+            arrowSize: readCssNumber('--border-arrow-size'),
+            speed: 0,
+        },
+    );
+    syncBorderState();
+}
+
 // ---------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------
@@ -292,24 +358,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Border animation ---
 
-    border = AnimateBorder(document.getElementById('controls-wrapper'), {
-        color: 'white',
-        arrowOutlineColor: getComputedStyle(document.documentElement)
-            .getPropertyValue('--color-bg')
-            .trim(),
-        strokeWidth: 14,
-        segments: 1,
-        gap: 160,
-        segmentCap: 'round',
-        arrowCap: 'butt',
-        arrowStyle: 'outlined',
-        arrowSize: 26,
-        speed: 0, // starts stopped; state machine controls this
-    });
+    rebuildBorder();
 
     // --- Orientation change ---
 
-    window.matchMedia('(orientation: portrait)').addEventListener('change', applyLayout);
+    window.matchMedia('(orientation: portrait)').addEventListener('change', () => {
+        applyLayout();
+        rebuildBorder();
+    });
+    window.addEventListener('resize', rebuildBorder);
 
     // --- Initial render ---
 

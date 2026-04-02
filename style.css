@@ -51,6 +51,7 @@ button {
   -webkit-appearance: none;
   border-radius: 0;
   color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 8. Avoid text overflows */
@@ -99,21 +100,26 @@ My styles
   --grid-gap: clamp(0.5rem, 2vmin, 1rem);
   --player-radius: clamp(0.75rem, 2.5vmin, 1.5rem);
   --player-font-size: clamp(1rem, 5vmin, 4rem);
-  --controls-size: 30vmin;
+  --controls-size: clamp(168px, 30vmin, 320px);
   --controls-radius: 200%;
   --controls-border-width: var(--grid-gap);
   --controls-border-color: var(--color-bg);
   --controls-border: var(--controls-border-width) solid var(--controls-border-color);
-  --center-control-size: 42%;
-  --center-control-padding: 0.35rem;
-  --center-control-gap: 0.35rem;
-  --center-control-primary-size: clamp(1.6rem, 4.5vmin, 2.75rem);
-  --center-control-secondary-size: clamp(0.65rem, 1.7vmin, 0.95rem);
+  --control-stroke-width: 2px;
+  --border-stroke-width: clamp(8px, 0.9vmin, 14px);
+  --border-gap: clamp(72px, 10vmin, 160px);
+  --border-arrow-size: clamp(14px, 1.8vmin, 26px);
+  --center-control-size: 50%;
+  --center-control-padding: clamp(0.2rem, 0.8vmin, 0.4rem);
+  --center-control-gap: clamp(0.3rem, 0.8vmin, 0.6rem);
+  --center-control-primary-size: clamp(1.2rem, 3.4vmin, 2.4rem);
+  --center-control-secondary-size: clamp(0.7rem, 1.8vmin, 1.1rem);
   --center-control-content-shift: -8%;
   --side-control-width: 58%;
   --side-control-overflow: 8%;
-  --side-control-font-size: clamp(1.4rem, 4.5vmin, 2.8rem);
-  --side-control-label-shift: 18%;
+  --side-control-vertical-overflow: 8%;
+  --side-control-font-size: clamp(1.2rem, 4vmin, 2.5rem);
+  --side-control-label-shift: 50%;
   --divider-inset: 10%;
   --button-hover-brightness: 1.1;
   --button-active-brightness: 0.9;
@@ -143,6 +149,7 @@ My styles
 
 .player:disabled {
   color: rgb(0 0 0 / 0.45);
+  cursor: default;
 }
 
 /* Dark tinted active state instead of pure black */
@@ -159,6 +166,11 @@ My styles
 
 .player:hover {
   filter: brightness(var(--button-hover-brightness));
+}
+
+.player:disabled:hover,
+.player:disabled:active {
+  filter: none;
 }
 
 .player:active {
@@ -212,15 +224,15 @@ My styles
 
 .half {
   position: absolute;
-  top: 0;
+  top: calc(-1 * var(--side-control-vertical-overflow));
   width: var(--side-control-width);
-  height: 100%;
+  height: calc(100% + (var(--side-control-vertical-overflow) * 2));
   font-size: var(--side-control-font-size);
 }
 
 .left {
   left: calc(-1 * var(--side-control-overflow));
-  border-right: 2px solid var(--color-bg);
+  border-right: var(--control-stroke-width) solid var(--color-bg);
   justify-content: flex-start;
 }
 
@@ -237,9 +249,10 @@ My styles
   z-index: 1;
   width: var(--center-control-size);
   height: var(--center-control-size);
-  border: 2px solid var(--color-bg);
+  border: 0;
   border-radius: 50%;
   background-color: var(--color-center-control-bg);
+  box-shadow: inset 0 0 0 var(--control-stroke-width) var(--color-bg);
   color: var(--color-center-control-text);
   display: flex;
   align-items: center;
@@ -257,6 +270,7 @@ My styles
   justify-content: center;
   gap: var(--center-control-gap);
   transform: translateY(var(--center-control-content-shift));
+  max-width: 100%;
 }
 
 #center-control:hover {
@@ -267,8 +281,22 @@ My styles
   filter: brightness(var(--button-active-brightness));
 }
 
+#setup-buttons button:hover {
+  filter: brightness(var(--button-hover-brightness));
+}
+
+#setup-buttons button:active {
+  filter: brightness(var(--button-active-brightness));
+}
+
 #center-control[disabled] {
   cursor: default;
+}
+
+#center-control.is-compact {
+  width: var(--center-control-size);
+  height: var(--center-control-size);
+  border-radius: 50%;
 }
 
 #center-control.is-full {
@@ -279,13 +307,25 @@ My styles
 
 #center-control-primary {
   font-size: var(--center-control-primary-size);
-  font-weight: 500;
+  font-weight: 700;
+  max-width: 100%;
+  white-space: nowrap;
 }
 
 #center-control-secondary {
   font-size: var(--center-control-secondary-size);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  max-width: 100%;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+#center-control.wrap-secondary #center-control-secondary {
+  max-width: 78%;
+  white-space: normal;
+  text-wrap: balance;
+  line-height: 1.15;
 }
 
 .overlay {
