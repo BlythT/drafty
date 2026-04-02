@@ -1,4 +1,4 @@
-# ༄ Drafty - Magic the Gathering Draft Helper
+# ⟳ Drafty - Magic the Gathering Draft Helper
 
 > [!NOTE]
 > WIP: See TODO.md
