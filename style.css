@@ -46,6 +46,13 @@ select {
   font: inherit;
 }
 
+button {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  color: inherit;
+}
+
 /* 8. Avoid text overflows */
 p,
 h1,
@@ -132,6 +139,10 @@ My styles
   border-radius: var(--player-radius);
   cursor: pointer;
   font-size: var(--player-font-size);
+}
+
+.player:disabled {
+  color: rgb(0 0 0 / 0.45);
 }
 
 /* Dark tinted active state instead of pure black */

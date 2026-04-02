@@ -230,6 +230,7 @@ function syncPlayers() {
     container.querySelectorAll('.player').forEach((player, i) => {
         player.dataset.playerIndex = i;
         player.style.setProperty('--player-color', getPlayerColor(i).color);
+        player.disabled = appState !== State.DRAFTING;
         // Keep the label current unless the player is already activated
         if (!player.classList.contains('player--active')) {
             player.querySelector('.player-label').textContent = `P${i + 1}`;
