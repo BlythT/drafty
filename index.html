@@ -26,17 +26,20 @@
 <body>
     <main>
         <div class="container">
-            <div id="controls">
-                <fieldset>
-                    <legend>Players</legend>
-                    <button id="remove-player">-</button>
-                    <button id="add-player">+</button>
-                </fieldset>
-                <fieldset>
-                    <legend>Direction</legend>
-                    <button id="reverse-direction">Reverse</button>
-                    <button id="start-stop-direction">Start/Stop</button>
-                </fieldset>
+            <div id="controls-wrapper" class="controls">
+                <div id="controls" class="controls__panel">
+                    <div id="setup-buttons" class="controls__setup">
+                        <button id="remove-player" class="controls__button controls__side controls__side--left" aria-label="Remove player"><span class="controls__side-label">&minus;</span></button>
+                        <button id="add-player" class="controls__button controls__side controls__side--right" aria-label="Add player"><span class="controls__side-label">+</span></button>
+                    </div>
+
+                    <button id="center-control" class="controls__button controls__center" type="button" aria-live="polite" aria-label="Confirm players">
+                        <span id="center-control-content" class="controls__center-content">
+                            <span id="center-control-primary" class="controls__center-primary">8</span>
+                            <span id="center-control-secondary" class="controls__center-secondary">Confirm</span>
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     </main>

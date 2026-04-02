@@ -83,14 +83,40 @@ h6 {
 My styles
 */
 
+:root {
+  --color-bg: #0f1115;
+  --color-controls-bg: #45515f;
+  --color-text-strong: #f3f5f7;
+  --color-center-control-bg: #f3f5f7;
+  --color-center-control-text: #11151c;
+  --grid-gap: clamp(0.5rem, 2vmin, 1rem);
+  --player-radius: clamp(0.75rem, 2.5vmin, 1.5rem);
+  --player-font-size: clamp(1rem, 5vmin, 4rem);
+  --controls-size: clamp(168px, 30vmin, 320px);
+  --border-stroke-width: clamp(8px, calc(var(--controls-size) * 0.07), 21px);
+  --border-gap: clamp(72px, 10vmin, 160px);
+  --border-arrow-size: clamp(14px, calc(var(--controls-size) * 0.13), 39px);
+  --button-hover-brightness: 1.1;
+  --button-active-brightness: 0.9;
+}
+
+button {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .container {
   font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
   position: relative;
   display: grid;
-  gap: clamp(0.5rem, 2vmin, 1rem);
+  gap: var(--grid-gap);
   width: 100%;
   height: 100dvh;
-  background-color: black;
+  background-color: var(--color-bg);
+  overflow: hidden;
 }
 
 .player {
@@ -99,20 +125,39 @@ My styles
   align-items: center;
   justify-content: center;
   border: none;
+  border-radius: var(--player-radius);
   cursor: pointer;
-  font-size: clamp(1rem, 5vmin, 4rem);
+  font-size: var(--player-font-size);
 }
 
+.player:disabled {
+  color: rgb(0 0 0 / 0.45);
+  cursor: default;
+}
+
+/* Dark tinted active state instead of pure black. */
 .player--active {
-  filter: brightness(1.2);
+  background-color: color-mix(in srgb, var(--player-color) 20%, var(--color-bg));
+  filter: none;
+}
+
+/* DONE text stays legible against the darkened active tile. */
+.player--active .player-label {
+  color: var(--color-text-strong);
+  font-weight: 500;
 }
 
 .player:hover {
-  filter: brightness(1.1);
+  filter: brightness(var(--button-hover-brightness));
+}
+
+.player:disabled:hover,
+.player:disabled:active {
+  filter: none;
 }
 
 .player:active {
-  filter: brightness(0.9);
+  filter: brightness(var(--button-active-brightness));
 }
 
 .rotate-90 {
@@ -127,36 +172,154 @@ My styles
   transform: rotate(270deg);
 }
 
-#controls {
+.controls {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   z-index: 10;
-  background-color: darkgrey;
-  border: 2px solid grey;
-  border-radius: 0.5em;
-  padding: 1em 1.5em;
+  width: var(--controls-size);
+  height: var(--controls-size);
+  transform: translate(-50%, -50%);
+  background-color: var(--color-controls-bg);
+  border: var(--grid-gap) solid var(--color-bg);
+  border-radius: 200%;
 }
 
-@media (orientation: portrait) {
-  #controls {
-    transform: translate(-50%, -50%) rotate(90deg);
-  }
+.controls__panel,
+.controls__setup {
+  position: absolute;
+  inset: 0;
 }
 
-#controls fieldset {
+.controls__panel {
+  overflow: hidden;
+  border-radius: inherit;
+  background-color: inherit;
+}
+
+.controls>svg {
+  z-index: 2;
+}
+
+.controls__button {
   border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-
-#controls button {
-  padding: 0.25em 0.5em;
-  cursor: pointer;
+  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   line-height: 1;
+  transition: filter 120ms ease;
+}
+
+.controls__button:hover {
+  filter: brightness(var(--button-hover-brightness));
+}
+
+.controls__button:active {
+  filter: brightness(var(--button-active-brightness));
+}
+
+.controls__button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.controls__button:disabled:hover,
+.controls__button:disabled:active {
+  filter: none;
+}
+
+.controls__side {
+  position: absolute;
+  top: -8%;
+  width: 58%;
+  height: 116%;
+  padding: 0;
+  color: var(--color-bg);
+  font-size: clamp(1.2rem, 4vmin, 2.5rem);
+}
+
+.controls__side--left {
+  left: -8%;
+  border-right: 2px solid var(--color-bg);
+}
+
+.controls__side--right {
+  right: -8%;
+}
+
+.controls__side-label {
+  display: block;
+}
+
+.controls__side--left .controls__side-label {
+  transform: translateX(-50%);
+}
+
+.controls__side--right .controls__side-label {
+  transform: translateX(50%);
+}
+
+.controls__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 50%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: var(--color-center-control-bg);
+  box-shadow: inset 0 0 0 2px var(--color-bg);
+  color: var(--color-center-control-text);
+  padding: clamp(0.2rem, 0.8vmin, 0.4rem);
+  text-align: center;
+}
+
+.controls__center.is-full {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.controls__center-content {
+  display: flex;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.3rem, 0.8vmin, 0.6rem);
+  transform: translateY(-8%);
+}
+
+.controls__center-primary,
+.controls__center-secondary {
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.controls__center-primary {
+  font-size: clamp(1.2rem, 3.4vmin, 2.4rem);
+  font-weight: 700;
+}
+
+.controls__center-secondary {
+  font-size: clamp(0.7rem, 1.8vmin, 1.1rem);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.controls__center.wrap-secondary .controls__center-secondary {
+  max-width: 78%;
+  white-space: normal;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+@media (orientation: portrait) {
+  .controls {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
 }
