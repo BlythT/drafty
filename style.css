@@ -281,6 +281,11 @@ My styles
   filter: brightness(var(--button-active-brightness));
 }
 
+#center-control:disabled:hover,
+#center-control:disabled:active {
+  filter: none;
+}
+
 #setup-buttons button:hover {
   filter: brightness(var(--button-hover-brightness));
 }
@@ -291,6 +296,7 @@ My styles
 
 #center-control[disabled] {
   cursor: default;
+  opacity: 1;
 }
 
 #center-control.is-compact {
