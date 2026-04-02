@@ -1,4 +1,6 @@
-# ⟳ Drafty - Magic the Gathering Draft Helper
+# <img src="assets/logo.svg" width="24"> Drafty - Magic the Gathering Draft Helper
+
+
 
 > [!NOTE]
 > WIP: See TODO.md
