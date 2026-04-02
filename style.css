@@ -106,9 +106,9 @@ My styles
   --controls-border-color: var(--color-bg);
   --controls-border: var(--controls-border-width) solid var(--controls-border-color);
   --control-stroke-width: 2px;
-  --border-stroke-width: clamp(8px, 0.9vmin, 14px);
+  --border-stroke-width: clamp(8px, calc(var(--controls-size) * 0.07), 21px);
   --border-gap: clamp(72px, 10vmin, 160px);
-  --border-arrow-size: clamp(14px, 1.8vmin, 26px);
+  --border-arrow-size: clamp(14px, calc(var(--controls-size) * 0.13), 39px);
   --center-control-size: 50%;
   --center-control-padding: clamp(0.2rem, 0.8vmin, 0.4rem);
   --center-control-gap: clamp(0.3rem, 0.8vmin, 0.6rem);
