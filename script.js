@@ -37,7 +37,6 @@ function updateCenterControl(state) {
     const centerControl = document.getElementById('center-control');
     const primary = document.getElementById('center-control-primary');
     const secondary = document.getElementById('center-control-secondary');
-    const overlay = document.querySelector('.overlay');
 
     centerControl.disabled = state === State.DRAFTING || state === State.COUNTDOWN;
 
@@ -45,7 +44,6 @@ function updateCenterControl(state) {
     setCenterControlMode(mode, {
         wrapSecondary: state === State.DRAFTING,
     });
-    overlay.classList.toggle('divider-hidden', mode === CenterControlMode.FULL);
 
     if (state === State.SETUP) {
         primary.textContent = String(playerCount);

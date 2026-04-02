@@ -46,14 +46,6 @@ select {
   font: inherit;
 }
 
-button {
-  appearance: none;
-  -webkit-appearance: none;
-  border-radius: 0;
-  color: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* 8. Avoid text overflows */
 p,
 h1,
@@ -101,28 +93,19 @@ My styles
   --player-radius: clamp(0.75rem, 2.5vmin, 1.5rem);
   --player-font-size: clamp(1rem, 5vmin, 4rem);
   --controls-size: clamp(168px, 30vmin, 320px);
-  --controls-radius: 200%;
-  --controls-border-width: var(--grid-gap);
-  --controls-border-color: var(--color-bg);
-  --controls-border: var(--controls-border-width) solid var(--controls-border-color);
-  --control-stroke-width: 2px;
   --border-stroke-width: clamp(8px, calc(var(--controls-size) * 0.07), 21px);
   --border-gap: clamp(72px, 10vmin, 160px);
   --border-arrow-size: clamp(14px, calc(var(--controls-size) * 0.13), 39px);
-  --center-control-size: 50%;
-  --center-control-padding: clamp(0.2rem, 0.8vmin, 0.4rem);
-  --center-control-gap: clamp(0.3rem, 0.8vmin, 0.6rem);
-  --center-control-primary-size: clamp(1.2rem, 3.4vmin, 2.4rem);
-  --center-control-secondary-size: clamp(0.7rem, 1.8vmin, 1.1rem);
-  --center-control-content-shift: -8%;
-  --side-control-width: 58%;
-  --side-control-overflow: 8%;
-  --side-control-vertical-overflow: 8%;
-  --side-control-font-size: clamp(1.2rem, 4vmin, 2.5rem);
-  --side-control-label-shift: 50%;
-  --divider-inset: 10%;
   --button-hover-brightness: 1.1;
   --button-active-brightness: 0.9;
+}
+
+button {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .container {
@@ -152,13 +135,13 @@ My styles
   cursor: default;
 }
 
-/* Dark tinted active state instead of pure black */
+/* Dark tinted active state instead of pure black. */
 .player--active {
   background-color: color-mix(in srgb, var(--player-color) 20%, var(--color-bg));
   filter: none;
 }
 
-/* READY text — white, visible */
+/* DONE text stays legible against the darkened active tile. */
 .player--active .player-label {
   color: var(--color-text-strong);
   font-weight: 500;
@@ -189,187 +172,154 @@ My styles
   transform: rotate(270deg);
 }
 
-#controls-wrapper {
+.controls {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   z-index: 10;
   width: var(--controls-size);
   height: var(--controls-size);
-  background-color: var(--color-controls-bg);
-  border: var(--controls-border);
-  border-radius: var(--controls-radius);
-}
-
-#controls {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  overflow: hidden;
-  background-color: inherit;
-  box-sizing: border-box;
-}
-
-@media (orientation: portrait) {
-  #controls-wrapper {
-    transform: translate(-50%, -50%) rotate(90deg);
-  }
-}
-
-#setup-buttons {
-  position: absolute;
-  inset: 0;
-}
-
-.half {
-  position: absolute;
-  top: calc(-1 * var(--side-control-vertical-overflow));
-  width: var(--side-control-width);
-  height: calc(100% + (var(--side-control-vertical-overflow) * 2));
-  font-size: var(--side-control-font-size);
-}
-
-.left {
-  left: calc(-1 * var(--side-control-overflow));
-  border-right: var(--control-stroke-width) solid var(--color-bg);
-  justify-content: flex-start;
-}
-
-.right {
-  right: calc(-1 * var(--side-control-overflow));
-  justify-content: flex-end;
-}
-
-#center-control {
-  position: absolute;
-  left: 50%;
-  top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1;
-  width: var(--center-control-size);
-  height: var(--center-control-size);
-  border: 0;
-  border-radius: 50%;
-  background-color: var(--color-center-control-bg);
-  box-shadow: inset 0 0 0 var(--control-stroke-width) var(--color-bg);
-  color: var(--color-center-control-text);
+  background-color: var(--color-controls-bg);
+  border: var(--grid-gap) solid var(--color-bg);
+  border-radius: 200%;
+}
+
+.controls__panel,
+.controls__setup {
+  position: absolute;
+  inset: 0;
+}
+
+.controls__panel {
+  overflow: hidden;
+  border-radius: inherit;
+  background-color: inherit;
+}
+
+.controls>svg {
+  z-index: 2;
+}
+
+.controls__button {
+  border: none;
+  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--center-control-padding);
-  text-align: center;
+  cursor: pointer;
   line-height: 1;
-  transition: filter 120ms ease, transform 120ms ease;
+  transition: filter 120ms ease;
 }
 
-#center-control-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--center-control-gap);
-  transform: translateY(var(--center-control-content-shift));
-  max-width: 100%;
-}
-
-#center-control:hover {
+.controls__button:hover {
   filter: brightness(var(--button-hover-brightness));
 }
 
-#center-control:active {
+.controls__button:active {
   filter: brightness(var(--button-active-brightness));
 }
 
-#center-control:disabled:hover,
-#center-control:disabled:active {
-  filter: none;
-}
-
-#setup-buttons button:hover {
-  filter: brightness(var(--button-hover-brightness));
-}
-
-#setup-buttons button:active {
-  filter: brightness(var(--button-active-brightness));
-}
-
-#center-control[disabled] {
+.controls__button:disabled {
   cursor: default;
   opacity: 1;
 }
 
-#center-control.is-compact {
-  width: var(--center-control-size);
-  height: var(--center-control-size);
-  border-radius: 50%;
+.controls__button:disabled:hover,
+.controls__button:disabled:active {
+  filter: none;
 }
 
-#center-control.is-full {
+.controls__side {
+  position: absolute;
+  top: -8%;
+  width: 58%;
+  height: 116%;
+  padding: 0;
+  color: var(--color-bg);
+  font-size: clamp(1.2rem, 4vmin, 2.5rem);
+}
+
+.controls__side--left {
+  left: -8%;
+  border-right: 2px solid var(--color-bg);
+}
+
+.controls__side--right {
+  right: -8%;
+}
+
+.controls__side-label {
+  display: block;
+}
+
+.controls__side--left .controls__side-label {
+  transform: translateX(-50%);
+}
+
+.controls__side--right .controls__side-label {
+  transform: translateX(50%);
+}
+
+.controls__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 50%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: var(--color-center-control-bg);
+  box-shadow: inset 0 0 0 2px var(--color-bg);
+  color: var(--color-center-control-text);
+  padding: clamp(0.2rem, 0.8vmin, 0.4rem);
+  text-align: center;
+}
+
+.controls__center.is-full {
   width: 100%;
   height: 100%;
   border-radius: inherit;
 }
 
-#center-control-primary {
-  font-size: var(--center-control-primary-size);
-  font-weight: 700;
-  max-width: 100%;
-  white-space: nowrap;
-}
-
-#center-control-secondary {
-  font-size: var(--center-control-secondary-size);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  max-width: 100%;
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-#center-control.wrap-secondary #center-control-secondary {
-  max-width: 78%;
-  white-space: normal;
-  text-wrap: balance;
-  line-height: 1.15;
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--controls-radius);
-  pointer-events: none;
-}
-
-#controls-wrapper > svg {
-  z-index: 2;
-}
-
-.overlay.divider-hidden {
-  display: none;
-}
-
-#controls button {
-  padding: 0.25em 0.5em;
-  cursor: pointer;
+.controls__center-content {
   display: flex;
+  max-width: 100%;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  gap: clamp(0.3rem, 0.8vmin, 0.6rem);
+  transform: translateY(-8%);
 }
 
-#setup-buttons button {
-  padding: 0;
+.controls__center-primary,
+.controls__center-secondary {
+  max-width: 100%;
+  white-space: nowrap;
 }
 
-.side-control-label {
-  display: block;
+.controls__center-primary {
+  font-size: clamp(1.2rem, 3.4vmin, 2.4rem);
+  font-weight: 700;
 }
 
-.left .side-control-label {
-  transform: translateX(calc(-1 * var(--side-control-label-shift)));
+.controls__center-secondary {
+  font-size: clamp(0.7rem, 1.8vmin, 1.1rem);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.right .side-control-label {
-  transform: translateX(var(--side-control-label-shift));
+.controls__center.wrap-secondary .controls__center-secondary {
+  max-width: 78%;
+  white-space: normal;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+@media (orientation: portrait) {
+  .controls {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
 }

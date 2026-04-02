@@ -14,11 +14,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
     <link rel="manifest" href="site.webmanifest" />
     <!-- FavIcon -->
-    <meta name="apple-mobile-web-app-title" content="Drafty" />
     <link rel="icon" type="image/png" href="assets/icon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="assets/icon/favicon.svg" />
     <link rel="shortcut icon" href="assets/icon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Drafty" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -26,23 +26,20 @@
 <body>
     <main>
         <div class="container">
-            <div id="controls-wrapper">
-                <div id="controls">
-                    <!-- State 1: Setup - pick player count -->
-                    <div id="setup-buttons">
-                        <button id="remove-player" class="half left" aria-label="Remove player"><span class="side-control-label">−</span></button>
-                        <button id="add-player" class="half right" aria-label="Add player"><span class="side-control-label">+</span></button>
+            <div id="controls-wrapper" class="controls">
+                <div id="controls" class="controls__panel">
+                    <div id="setup-buttons" class="controls__setup">
+                        <button id="remove-player" class="controls__button controls__side controls__side--left" aria-label="Remove player"><span class="controls__side-label">&minus;</span></button>
+                        <button id="add-player" class="controls__button controls__side controls__side--right" aria-label="Add player"><span class="controls__side-label">+</span></button>
                     </div>
 
-                    <button id="center-control" type="button" aria-live="polite" aria-label="Confirm players">
-                        <span id="center-control-content">
-                            <span id="center-control-primary">8</span>
-                            <span id="center-control-secondary">Confirm</span>
+                    <button id="center-control" class="controls__button controls__center" type="button" aria-live="polite" aria-label="Confirm players">
+                        <span id="center-control-content" class="controls__center-content">
+                            <span id="center-control-primary" class="controls__center-primary">8</span>
+                            <span id="center-control-secondary" class="controls__center-secondary">Confirm</span>
                         </span>
                     </button>
                 </div>
-
-                <div class="overlay" aria-hidden="true"></div>
             </div>
         </div>
     </main>
