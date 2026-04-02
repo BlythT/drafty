@@ -1,21 +1,123 @@
 import { LAYOUTS } from './layouts.js';
 
-const TIMER_DURATION = 60;
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
 const BORDER_SPEED = 80;
 
-let playerCount = 8; // Draft usually has 8 players.
+// ---------------------------------------------------------------------------
+// State machine
+// ---------------------------------------------------------------------------
+
+const State = {
+    SETUP: 'setup',
+    READY: 'ready',
+    DRAFTING: 'drafting',
+};
+
+let appState = State.SETUP;
+let roundNumber = 0;
+
+/** Indices of players who have tapped their button this round. */
+let activatedThisRound = new Set();
+
+function updateConfirmButton(state) {
+    const confirmButton = document.getElementById('confirm-players');
+    confirmButton.hidden = state === State.DRAFTING;
+
+    if (state === State.READY) {
+        confirmButton.innerHTML = '&#9654;';
+        confirmButton.setAttribute('aria-label', 'Start draft');
+        return;
+    }
+
+    confirmButton.innerHTML = '&check;';
+    confirmButton.setAttribute('aria-label', 'Confirm players');
+}
+
+/**
+ * Transition to a new state. Swaps the visible control panel and runs any
+ * entry logic for the incoming state.
+ */
+function setState(next) {
+    document.querySelectorAll('.control-state').forEach(el => {
+        el.hidden = el.id !== `state-${next}`;
+    });
+    document.getElementById('setup-buttons').hidden = next !== State.SETUP;
+    updateConfirmButton(next);
+
+    appState = next;
+
+    const disablePlayers = () =>
+        document.querySelectorAll('.player').forEach(p => p.disabled = true);
+    const enablePlayers = () =>
+        document.querySelectorAll('.player').forEach(p => p.disabled = false);
+
+    switch (next) {
+        case State.SETUP:
+            border.setSpeed(0);
+            disablePlayers();
+            break;
+
+        case State.READY:
+            border.setSpeed(0);
+            disablePlayers();
+            break;
+
+        case State.DRAFTING: {
+            roundNumber++;
+            activatedThisRound = new Set();
+            resetPlayerRounds();
+            enablePlayers();
+
+            // Direction alternates: odd rounds CW, even rounds CCW.
+            const dir = roundNumber % 2 === 1 ? 'cw' : 'ccw';
+            border.setDirection(dir);
+            border.setSpeed(BORDER_SPEED);
+
+            document.getElementById('round-display').textContent = `Round ${roundNumber}${dir === 'cw' ? 'Clockwise' : 'Counterclockwise'}`;
+            break;
+        }
+    }
+}
+
+/**
+ * Called by each player button when it is first activated during a drafting
+ * round. Once every player has tapped, the round ends.
+ */
+function onPlayerActivated(playerIndex) {
+    if (appState !== State.DRAFTING) return;
+
+    activatedThisRound.add(playerIndex);
+
+    if (activatedThisRound.size >= playerCount) {
+        // Brief pause so the last player can see their timer start.
+        setTimeout(() => setState(State.READY), 600);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Player count
+// ---------------------------------------------------------------------------
+
+let playerCount = 8;
 
 function updatePlayerCountDisplay() {
     document.getElementById('player-count-display').value = playerCount;
 }
 
-function applyLayout() {
-    const container = document.querySelector('.container');  // add this
-    const players = container.querySelectorAll('.player');   // add this
+// ---------------------------------------------------------------------------
+// Layout
+// ---------------------------------------------------------------------------
 
-    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+function applyLayout() {
+    const container = document.querySelector('.container');
+    const players = container.querySelectorAll('.player');
+
+    const isPortrait = window.matchMedia('(orientation: portrait)').matches;
     const orientation = isPortrait ? 'portrait' : 'landscape';
     const layout = LAYOUTS[players.length]?.[orientation];
     if (!layout) return;
@@ -36,17 +138,11 @@ function applyLayout() {
     container.style.gridTemplateRows = layout.rows;
 }
 
-function formatTime(seconds) {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-}
-
-// Observable 10 palette by Observable, Inc.
+// ---------------------------------------------------------------------------
+// Player colours  (Observable 10 palette)
 // https://observablehq.com/blog/crafting-data-colors
-//
-// Preset colours array avoids "colour flicker" that the previous evenly-spaced
-// oklab colour generator had
+// ---------------------------------------------------------------------------
+
 const PLAYER_COLORS = [
     { color: '#4269D0', name: 'blue' },
     { color: '#FF725C', name: 'orange' },
@@ -64,49 +160,43 @@ function getPlayerColor(index) {
     return PLAYER_COLORS[index % PLAYER_COLORS.length];
 }
 
-function createPlayer(index, total) {
+// ---------------------------------------------------------------------------
+// Player creation
+// ---------------------------------------------------------------------------
+
+function createPlayer(index) {
     const player = document.createElement('button');
     player.classList.add('player');
-    player.style.setProperty('--player-color', getPlayerColor(index, total).color);
     player.dataset.playerIndex = index;
+    player.style.setProperty('--player-color', getPlayerColor(index).color);
 
     const span = document.createElement('span');
+    span.textContent = `P${index + 1}`;
     span.classList.add('player-label');
     player.appendChild(span);
 
-    let secondsLeft = TIMER_DURATION;
-    let intervalId = null;
-    let running = false;
-
-    span.textContent = formatTime(secondsLeft);
+    let activated = false;
 
     player.addEventListener('click', () => {
-        player.classList.toggle('player--active', !running);
-
-        if (running) {
-            clearInterval(intervalId);
-            running = false;
-        } else {
-            if (secondsLeft === 0) {
-                secondsLeft = TIMER_DURATION;
-                span.textContent = formatTime(secondsLeft);
-            }
-            intervalId = setInterval(() => {
-                secondsLeft--;
-                span.textContent = formatTime(secondsLeft);
-                if (secondsLeft <= 0) {
-                    clearInterval(intervalId);
-                    running = false;
-                    player.classList.remove('player--active');
-                    span.textContent = '00:00';
-                }
-            }, 1000);
-            running = true;
-        }
+        if (activated) return;
+        activated = true;
+        player.classList.add('player--active');
+        span.textContent = 'READY';
+        onPlayerActivated(Number(player.dataset.playerIndex));
     });
+
+    player.resetRound = () => {
+        activated = false;
+        player.classList.remove('player--active');
+        span.textContent = `P${player.dataset.playerIndex * 1 + 1}`;
+    };
 
     return player;
 }
+
+// ---------------------------------------------------------------------------
+// Player sync
+// ---------------------------------------------------------------------------
 
 function syncPlayers() {
     const container = document.querySelector('.container');
@@ -114,7 +204,7 @@ function syncPlayers() {
 
     if (players.length < playerCount) {
         for (let i = players.length; i < playerCount; i++) {
-            container.appendChild(createPlayer(i, playerCount));
+            container.appendChild(createPlayer(i));
         }
     } else if (players.length > playerCount) {
         for (let i = players.length; i > playerCount; i--) {
@@ -122,25 +212,46 @@ function syncPlayers() {
         }
     }
 
-    // Recalculate colours for all players when count changes
+    // Keep indices and colours in sync after additions/removals.
     container.querySelectorAll('.player').forEach((player, i) => {
-        player.style.setProperty('--player-color', getPlayerColor(i, playerCount).color);
         player.dataset.playerIndex = i;
+        player.style.setProperty('--player-color', getPlayerColor(i).color);
+        // Keep the label current unless the player is already activated
+        if (!player.classList.contains('player--active')) {
+            player.querySelector('.player-label').textContent = `P${i + 1}`;
+        }
     });
 
     applyLayout();
 }
 
+/** Reset per-round activation flags on all current players. */
+function resetPlayerRounds() {
+    document.querySelectorAll('.player').forEach(p => p.resetRound?.());
+}
+
+// ---------------------------------------------------------------------------
+// Border animation (assigned after DOMContentLoaded)
+// ---------------------------------------------------------------------------
+
+let border;
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.container');
 
-    container.querySelectorAll('.player').forEach(player => player.remove());
+    // Clear any server-rendered players.
+    container.querySelectorAll('.player').forEach(p => p.remove());
+
+    // Initial player count display.
     updatePlayerCountDisplay();
 
-    const addBtn = document.querySelector('#add-player');
-    const removeBtn = document.querySelector('#remove-player');
+    // --- Setup state controls ---
 
-    addBtn.addEventListener('click', () => {
+    document.getElementById('add-player').addEventListener('click', () => {
         if (playerCount < MAX_PLAYERS) {
             playerCount++;
             updatePlayerCountDisplay();
@@ -148,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    removeBtn.addEventListener('click', () => {
+    document.getElementById('remove-player').addEventListener('click', () => {
         if (playerCount > MIN_PLAYERS) {
             playerCount--;
             updatePlayerCountDisplay();
@@ -156,21 +267,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.getElementById('confirm-players').addEventListener('click', () => {
+        if (appState === State.SETUP) {
+            setState(State.READY);
+        } else if (appState === State.READY) {
+            setState(State.DRAFTING);
+        }
+    });
+
+    // --- Border animation ---
+
+    border = AnimateBorder(document.getElementById('controls-wrapper'), {
+        color: 'white',
+        strokeWidth: 10,
+        segments: 1,
+        gap: 160,
+        segmentCap: 'round',
+        arrowCap: 'butt',
+        arrowStyle: 'outlined',
+        arrowSize: 20,
+        speed: 0, // starts stopped; state machine controls this
+    });
+
+    // --- Orientation change ---
+
+    window.matchMedia('(orientation: portrait)').addEventListener('change', applyLayout);
+
+    // --- Initial render ---
+
     syncPlayers();
-
-    // Draft direction arrow border on controls
-    AnimateBorder(document.getElementById('controls-wrapper'),
-        {
-            color: 'white',
-            strokeWidth: 10,
-            segments: 1,
-            gap: 160,
-            segmentCap: 'round',
-            arrowCap: 'butt',
-            arrowStyle: 'outlined',
-            arrowSize: 20,
-            speed: BORDER_SPEED,
-        });
-
-    window.matchMedia("(orientation: portrait)").addEventListener('change', applyLayout);
+    setState(State.SETUP);
 });
