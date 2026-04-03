@@ -256,7 +256,9 @@ function createPlayer(index) {
 
     let activated = false;
 
-    player.addEventListener('click', () => {
+    player.addEventListener('pointerdown', (e) => {
+        if (e.currentTarget.disabled) return;
+        e.preventDefault();
         const playerIndex = Number(player.dataset.playerIndex);
 
         if (!activated) {
@@ -396,7 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Setup state controls ---
 
-    document.getElementById('add-player').addEventListener('click', () => {
+    document.getElementById('add-player').addEventListener('pointerdown', (e) => {
+        if (e.currentTarget.disabled) return;
+        e.preventDefault();
         if (playerCount < MAX_PLAYERS) {
             playerCount++;
             updatePlayerCountDisplay();
@@ -404,7 +408,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('remove-player').addEventListener('click', () => {
+    document.getElementById('remove-player').addEventListener('pointerdown', (e) => {
+        if (e.currentTarget.disabled) return;
+        e.preventDefault();
         if (playerCount > MIN_PLAYERS) {
             playerCount--;
             updatePlayerCountDisplay();
@@ -412,7 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('center-control').addEventListener('click', () => {
+    document.getElementById('center-control').addEventListener('pointerdown', (e) => {
+        if (e.currentTarget.disabled) return;
+        e.preventDefault();
         if (appState === State.SETUP) {
             setState(State.READY);
         } else if (appState === State.READY) {
