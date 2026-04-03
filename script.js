@@ -336,7 +336,7 @@ function readCssNumber(name) {
 
     const host = document.getElementById('controls-wrapper');
     host.appendChild(probe);
-    const value = probe.getBoundingClientRect().width;
+    const value = probe.offsetWidth;
     probe.remove();
 
     return value;
