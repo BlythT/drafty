@@ -4,18 +4,15 @@
 
 - [x] Default to 8 players since that's typical draft group
 - [x] Fix layounts and rotations at each valid player count
-- [ ] Add "turns"
-    - [ ] Configure settings before any turn has started, locked in once draft starts to avoid messing things up, simplify interface
-    - [ ] When a turn starts (someone touches the screen (whole screen region or just a timer?)), all timers count down together
-    - [ ] Players can press their button when they are done, pausing their own timer
-    - [ ] A turn ends when either:
-      - Every player has paused their timer
-      - The time on any timer has run out
-    - [ ] Confirmation from player before starting next turn (gives everyone a chance to open their packs, or pause if need a breather, etc)
+- [x] Add pack / pick draft flow
+    - [x] Track packs and picks instead of generic turns
+    - [x] Advance automatically to the next pick once everyone is done
+    - [x] Pause between packs with a clear "new pack" screen
+    - [x] Show a finished state at the end of the draft
 - [x] Add draft direction reminder
-  - Starts clockwise
+  - Starts clockwise / pass left
   - Ever-present on screen indicator (subtle animation?)
-  - Switches direction each turn (CCW, CW, CCW, etc)
+  - Switches direction each pack
 - [ ] Configurable timer
 - [x] [Host with GitHub pages](https://github.com/BlythT/drafty))
 - [x] Enable progressive webapp installation for Android and iOS.
@@ -23,11 +20,13 @@
 ## Nice to have
 
 - [x] Fix colour schemes (currently dull)
-- [ ] Beautify the design
+- [x] Beautify the design
 - [ ] Track how many cards each player should have in hand
-- [ ] Advanced settings (not in main UI to avoid clutter)
-    - [ ] Pack size setting (influences number of turns)
-    - [ ] Support for pick-two formats
+- [ ] Settings menu
+    - [ ] Keep it out of the main draft UI to avoid clutter
+    - [ ] Support variable pack size
+    - [ ] Support variable number of packs
+    - [ ] Support pick-two formats
 - [ ] optional name labels (less important than a life tracker)
 - [ ] Pause button to pause the whole process at any point
 

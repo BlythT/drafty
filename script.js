@@ -7,6 +7,8 @@ import { LAYOUTS } from './layouts.js';
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
 const BORDER_SPEED = 80;
+const PACK_COUNT = 3;
+const PICKS_PER_PACK = 15;
 
 // ---------------------------------------------------------------------------
 // State machine
@@ -15,12 +17,15 @@ const BORDER_SPEED = 80;
 const State = {
     SETUP: 'setup',
     READY: 'ready',
+    BETWEEN_PACKS: 'between-packs',
     COUNTDOWN: 'countdown',
     DRAFTING: 'drafting',
+    COMPLETE: 'complete',
 };
 
 let appState = State.SETUP;
-let roundNumber = 0;
+let currentPack = 1;
+let currentPick = 1;
 let borderDirection = 'cw';
 let countdownValue = 3;
 let countdownIntervalId = null;
@@ -30,8 +35,48 @@ const CenterControlMode = {
     FULL: 'full',
 };
 
-/** Indices of players who have tapped their button this round. */
-let activatedThisRound = new Set();
+/** Indices of players who have tapped their button this pick. */
+let activatedThisPick = new Set();
+
+function getDraftLabel() {
+    return `Pack ${currentPack} Pick ${currentPick}`;
+}
+
+function getDirectionForPack(packNumber) {
+    return packNumber % 2 === 1 ? 'cw' : 'ccw';
+}
+
+function getDirectionLabel(packNumber) {
+    return getDirectionForPack(packNumber) === 'cw'
+        ? 'Left'
+        : 'Right';
+}
+
+function resetDraftProgress() {
+    currentPack = 1;
+    currentPick = 1;
+    activatedThisPick = new Set();
+    borderDirection = getDirectionForPack(currentPack);
+}
+
+function advancePick() {
+    if (currentPick < PICKS_PER_PACK) {
+        currentPick += 1;
+        return true;
+    }
+
+    return false;
+}
+
+function advancePack() {
+    if (currentPack < PACK_COUNT) {
+        currentPack += 1;
+        currentPick = 1;
+        return true;
+    }
+
+    return false;
+}
 
 function updateCenterControl(state) {
     const centerControl = document.getElementById('center-control');
@@ -42,7 +87,7 @@ function updateCenterControl(state) {
 
     const mode = state === State.SETUP ? CenterControlMode.COMPACT : CenterControlMode.FULL;
     setCenterControlMode(mode, {
-        wrapSecondary: state === State.DRAFTING,
+        wrapSecondary: state === State.DRAFTING || state === State.BETWEEN_PACKS,
     });
 
     if (state === State.SETUP) {
@@ -54,21 +99,38 @@ function updateCenterControl(state) {
 
     if (state === State.READY) {
         primary.textContent = 'Start';
-        secondary.textContent = `Round ${roundNumber + 1}`;
-        centerControl.setAttribute('aria-label', `Start round ${roundNumber + 1}`);
+        secondary.textContent = `Passing ${getDirectionLabel(currentPack)}`;
+        centerControl.setAttribute('aria-label', `Start. Passing ${getDirectionLabel(currentPack)}.`);
+        return;
+    }
+
+    if (state === State.BETWEEN_PACKS) {
+        primary.textContent = 'NEW PACK';
+        secondary.textContent = `Passing ${getDirectionLabel(currentPack)}`;
+        centerControl.setAttribute(
+            'aria-label',
+            `New pack. ${getDraftLabel()}. Now passing ${getDirectionLabel(currentPack)}.`,
+        );
         return;
     }
 
     if (state === State.COUNTDOWN) {
         primary.textContent = String(countdownValue);
-        secondary.textContent = `Round ${roundNumber + 1}`;
-        centerControl.setAttribute('aria-label', `Round ${roundNumber + 1} begins in ${countdownValue}`);
+        secondary.textContent = '';
+        centerControl.setAttribute('aria-label', `${getDraftLabel()} begins in ${countdownValue}`);
         return;
     }
 
-    primary.textContent = `ROUND ${roundNumber}`;
+    if (state === State.COMPLETE) {
+        primary.textContent = 'DRAFT\nCOMPLETE';
+        secondary.textContent = 'Start New Draft';
+        centerControl.setAttribute('aria-label', 'Draft complete. Start new draft');
+        return;
+    }
+
+    primary.textContent = `PACK ${currentPack}\nPICK ${currentPick}`;
     secondary.textContent = 'Tap Your Tile When Done';
-    centerControl.setAttribute('aria-label', `Round ${roundNumber}`);
+    centerControl.setAttribute('aria-label', `${getDraftLabel()}. Tap your tile when done`);
 }
 
 function setCenterControlMode(mode, options = {}) {
@@ -119,20 +181,36 @@ function setState(next) {
     switch (next) {
         case State.SETUP:
             clearCountdown();
+            resetDraftProgress();
             border.setSpeed(0);
+            resetPlayerPickState();
             disablePlayers();
+            syncBorderState();
             updateCenterControl(next);
             break;
 
         case State.READY:
             clearCountdown();
+            resetPlayerPickState();
+            borderDirection = getDirectionForPack(currentPack);
             border.setSpeed(0);
             disablePlayers();
+            syncBorderState();
+            updateCenterControl(next);
+            break;
+
+        case State.BETWEEN_PACKS:
+            clearCountdown();
+            resetPlayerPickState();
+            borderDirection = getDirectionForPack(currentPack);
+            border.setSpeed(0);
+            disablePlayers();
+            syncBorderState();
             updateCenterControl(next);
             break;
 
         case State.COUNTDOWN:
-            borderDirection = (roundNumber + 1) % 2 === 1 ? 'cw' : 'ccw';
+            borderDirection = getDirectionForPack(currentPack);
             syncBorderState();
             disablePlayers();
             startCountdown();
@@ -140,40 +218,58 @@ function setState(next) {
 
         case State.DRAFTING: {
             clearCountdown();
-            roundNumber++;
-            activatedThisRound = new Set();
-            resetPlayerRounds();
+            activatedThisPick = new Set();
+            resetPlayerPickState();
             enablePlayers();
-
-            // Direction alternates: odd rounds CW, even rounds CCW.
-            const dir = roundNumber % 2 === 1 ? 'cw' : 'ccw';
-            borderDirection = dir;
+            borderDirection = getDirectionForPack(currentPack);
             syncBorderState();
             updateCenterControl(next);
             break;
         }
+
+        case State.COMPLETE:
+            clearCountdown();
+            resetPlayerPickState();
+            border.setSpeed(0);
+            disablePlayers();
+            syncBorderState();
+            updateCenterControl(next);
+            break;
     }
 }
 
 /**
  * Called by each player button when it is first activated during a drafting
- * round. Once every player has tapped, the round ends.
+ * pick. Once every player has tapped, the draft advances to the next pick.
  */
 function onPlayerActivated(playerIndex) {
     if (appState !== State.DRAFTING) return;
 
-    activatedThisRound.add(playerIndex);
+    activatedThisPick.add(playerIndex);
 
-    if (activatedThisRound.size >= playerCount) {
+    if (activatedThisPick.size >= playerCount) {
         // Brief pause so the last player can see their timer start.
-        setTimeout(() => setState(State.READY), 600);
+        setTimeout(() => {
+            if (appState !== State.DRAFTING) return;
+            if (advancePick()) {
+                setState(State.COUNTDOWN);
+                return;
+            }
+
+            if (advancePack()) {
+                setState(State.BETWEEN_PACKS);
+                return;
+            }
+
+            setState(State.COMPLETE);
+        }, 600);
     }
 }
 
 function onPlayerDeactivated(playerIndex) {
     if (appState !== State.DRAFTING) return;
 
-    activatedThisRound.delete(playerIndex);
+    activatedThisPick.delete(playerIndex);
 }
 
 // ---------------------------------------------------------------------------
@@ -278,7 +374,7 @@ function createPlayer(index) {
         onPlayerDeactivated(playerIndex);
     });
 
-    player.resetRound = () => {
+    player.resetPick = () => {
         activated = false;
         player.classList.remove('player--active');
         span.textContent = `P${player.dataset.playerIndex * 1 + 1}`;
@@ -319,9 +415,9 @@ function syncPlayers() {
     applyLayout();
 }
 
-/** Reset per-round activation flags on all current players. */
-function resetPlayerRounds() {
-    document.querySelectorAll('.player').forEach(p => p.resetRound?.());
+/** Reset per-pick activation flags on all current players. */
+function resetPlayerPickState() {
+    document.querySelectorAll('.player').forEach(p => p.resetPick?.());
 }
 
 // ---------------------------------------------------------------------------
@@ -429,6 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
             setState(State.READY);
         } else if (appState === State.READY) {
             setState(State.COUNTDOWN);
+        } else if (appState === State.BETWEEN_PACKS) {
+            setState(State.COUNTDOWN);
+        } else if (appState === State.COMPLETE) {
+            setState(State.SETUP);
         }
     });
 
