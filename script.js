@@ -1,4 +1,10 @@
 import { LAYOUTS } from './layouts.js';
+import {
+    playDirectionChangeSinePad,
+    playCountdownSinePadBeep,
+    ensureAudioReady,
+    playRoundSinePad,
+} from './audio.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -37,6 +43,10 @@ const CenterControlMode = {
 
 /** Indices of players who have tapped their button this pick. */
 let activatedThisPick = new Set();
+
+function unlockAudio() {
+    void ensureAudioReady();
+}
 
 function getDraftLabel() {
     return `Pack ${currentPack} Pick ${currentPick}`;
@@ -150,6 +160,7 @@ function startCountdown() {
     clearCountdown();
     countdownValue = 3;
     updateCenterControl(State.COUNTDOWN);
+    void playCountdownSinePadBeep(countdownValue);
 
     countdownIntervalId = setInterval(() => {
         countdownValue -= 1;
@@ -161,6 +172,7 @@ function startCountdown() {
         }
 
         updateCenterControl(State.COUNTDOWN);
+        void playCountdownSinePadBeep(countdownValue);
     }, 1000);
 }
 
@@ -200,6 +212,7 @@ function setState(next) {
             break;
 
         case State.BETWEEN_PACKS:
+            void playDirectionChangeSinePad();
             clearCountdown();
             resetPlayerPickState();
             borderDirection = getDirectionForPack(currentPack);
@@ -248,6 +261,8 @@ function onPlayerActivated(playerIndex) {
     activatedThisPick.add(playerIndex);
 
     if (activatedThisPick.size >= playerCount) {
+        void playRoundSinePad();
+
         // Brief pause so the last player can see their timer start.
         setTimeout(() => {
             if (appState !== State.DRAFTING) return;
@@ -257,6 +272,7 @@ function onPlayerActivated(playerIndex) {
             }
 
             if (advancePack()) {
+                void playDirectionChangeSinePad();
                 setState(State.BETWEEN_PACKS);
                 return;
             }
@@ -355,6 +371,7 @@ function createPlayer(index) {
     player.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
         if (e.currentTarget.disabled) return;
+        unlockAudio();
         e.preventDefault();
         const playerIndex = Number(player.dataset.playerIndex);
 
@@ -498,6 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('add-player').addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
         if (e.currentTarget.disabled) return;
+        unlockAudio();
         e.preventDefault();
         if (playerCount < MAX_PLAYERS) {
             playerCount++;
@@ -509,6 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('remove-player').addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
         if (e.currentTarget.disabled) return;
+        unlockAudio();
         e.preventDefault();
         if (playerCount > MIN_PLAYERS) {
             playerCount--;
@@ -520,6 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('center-control').addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
         if (e.currentTarget.disabled) return;
+        unlockAudio();
         e.preventDefault();
         if (appState === State.SETUP) {
             setState(State.READY);
