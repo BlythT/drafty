@@ -261,9 +261,9 @@ function onPlayerActivated(playerIndex) {
 
     activatedThisPick.add(playerIndex);
 
-    // Last player: queue the tension.
     playTapGlassBead(activatedThisPick.size - 1, playerCount);
 
+    // Last player: queue the tension.
     if (activatedThisPick.size === playerCount - 1) {
         startUrgencyAudio();
     }

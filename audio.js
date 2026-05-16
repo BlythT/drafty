@@ -80,6 +80,11 @@ function playSinePad({
 
     const startTime = context.currentTime + start;
 
+    // Local mix bus for this pad instance so its layers mix cleanly before the reverb split
+    const padBus = context.createGain();
+    padBus.gain.setValueAtTime(1.0, startTime);
+    getReverb(context).connect(padBus, context.destination);
+
     function playLayer(freq, vol, att, dec, rel) {
         const osc = context.createOscillator();
         const gain = context.createGain();
@@ -99,7 +104,9 @@ function playSinePad({
 
         osc.connect(filter);
         filter.connect(gain);
-        getReverb(context).connect(gain, context.destination);
+
+        // Connect layers to the single instance-controlled pad bus
+        gain.connect(padBus);
 
         osc.start(startTime);
         osc.stop(startTime + att + dec + rel + 0.05);
@@ -206,40 +213,58 @@ export function stopUrgencyAudio() {
         window.clearInterval(urgencyIntervalId);
         urgencyIntervalId = null;
     }
-
     urgencyStartTime = 0;
 }
 
 export function playTapGlassBead(playerProgressIndex, totalPlayers) {
     const context = getAudioContext();
-    if (!context) return;
+    if (!context || context.state !== 'running') return;
 
-    // Midi notes 60 (C4) to 72 (C5).
-    const floorMidi = 60;
-    const ceilingMidi = 72;
-    const midiRange = ceilingMidi - floorMidi;
-
-    // Interpolate the MIDI note based on player progress, ensuring it scales with player count.
-    const steps = Math.max(1, totalPlayers - 1);
-    const exactMidiNote = floorMidi + (midiRange * (playerProgressIndex / steps));
-
-    const targetMidi = Math.round(exactMidiNote);
-
-    // Convert the MIDI note back to an exact acoustic frequency: 440 * 2^((note - 69) / 12)
-    const fundamental = 440 * Math.pow(2, (targetMidi - 69) / 12);
     const now = context.currentTime;
 
+    const floorMidi = 72;    // C5 (523.25 Hz)
+    const ceilingMidi = 84;  // C6 (1046.50 Hz)
+    const midiRange = ceilingMidi - floorMidi;
+
+    const steps = Math.max(1, totalPlayers - 1);
+    const exactMidiNote = floorMidi + (midiRange * (playerProgressIndex / steps));
+    let targetMidi = Math.round(exactMidiNote);
+
+    const noteInOctave = targetMidi % 12;
+    if ([1, 3, 6, 8, 10].includes(noteInOctave)) {
+        targetMidi += 1;
+    }
+
+    if (targetMidi > ceilingMidi) {
+        targetMidi = ceilingMidi;
+    }
+
+    const fundamental = 440 * Math.pow(2, (targetMidi - 69) / 12);
+
+    // 1. Create a local mix bus gain node for this tap interaction instance
+    const glassTapBus = context.createGain();
+    glassTapBus.gain.setValueAtTime(1.0, now);
+
+    // 2. Set up the high-pass filter
+    const filter = context.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(150, now);
+
+    // 3. Connect the signal path: Oscillators -> Filter -> Local Bus -> SINGLE REVERB -> Speakers
+    filter.connect(glassTapBus);
+    getReverb(context).connect(glassTapBus, context.destination);
+
     const components = [
-        { freq: fundamental, vol: 0.14, decay: 0.07 },
-        { freq: fundamental * 2.00, vol: 0.08, decay: 0.04 },
-        { freq: fundamental * 3.00, vol: 0.04, decay: 0.02 }
+        { freq: fundamental, type: 'triangle', vol: 0.12, decay: 0.08 },
+        { freq: fundamental * 2.00, type: 'sine', vol: 0.06, decay: 0.04 },
+        { freq: fundamental * 4.00, type: 'sine', vol: 0.03, decay: 0.02 }
     ];
 
     components.forEach(comp => {
         const osc = context.createOscillator();
         const gainNode = context.createGain();
 
-        osc.type = 'sine';
+        osc.type = comp.type;
         osc.frequency.setValueAtTime(comp.freq, now);
 
         gainNode.gain.setValueAtTime(0, now);
@@ -247,7 +272,7 @@ export function playTapGlassBead(playerProgressIndex, totalPlayers) {
         gainNode.gain.exponentialRampToValueAtTime(0.0001, now + comp.decay);
 
         osc.connect(gainNode);
-        gainNode.connect(context.destination);
+        gainNode.connect(filter); // Route into filter
 
         osc.start(now);
         osc.stop(now + comp.decay + 0.02);
