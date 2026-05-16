@@ -4,6 +4,8 @@ import {
     playCountdownSinePadBeep,
     ensureAudioReady,
     playRoundSinePad,
+    startUrgencyAudio,
+    stopUrgencyAudio,
 } from './audio.js';
 
 // ---------------------------------------------------------------------------
@@ -185,6 +187,8 @@ function setState(next) {
 
     appState = next;
 
+    stopUrgencyAudio(); // Just in case
+
     const disablePlayers = () =>
         document.querySelectorAll('.player').forEach(p => p.disabled = true);
     const enablePlayers = () =>
@@ -260,7 +264,13 @@ function onPlayerActivated(playerIndex) {
 
     activatedThisPick.add(playerIndex);
 
+    // Last player: queue the tension.
+    if (activatedThisPick.size === playerCount - 1) {
+        startUrgencyAudio();
+    }
+
     if (activatedThisPick.size >= playerCount) {
+        stopUrgencyAudio();
         void playRoundSinePad();
 
         // Brief pause so the last player can see their timer start.
@@ -286,6 +296,11 @@ function onPlayerDeactivated(playerIndex) {
     if (appState !== State.DRAFTING) return;
 
     activatedThisPick.delete(playerIndex);
+
+    // No longer the last player: stop the tension.
+    if (activatedThisPick.size < playerCount - 1) {
+        stopUrgencyAudio();
+    }
 }
 
 // ---------------------------------------------------------------------------

@@ -161,3 +161,51 @@ export async function playDirectionChangeSinePad() {
         });
     });
 }
+
+let urgencyIntervalId = null;
+let urgencyStartTime = 0;
+
+export async function startUrgencyAudio() {
+    if (urgencyIntervalId) return true; // Already running
+
+    return withReady(() => {
+        const context = getAudioContext();
+        if (!context) return;
+
+        urgencyStartTime = context.currentTime;
+        let tickCounter = 0;
+
+        urgencyIntervalId = window.setInterval(() => {
+            const timeActive = context.currentTime - urgencyStartTime;
+
+            const baseNote = 659;
+            const alertNote = 698;
+            const currentPitch = (tickCounter % 2 === 0) ? baseNote : alertNote;
+
+            // Gradually swells from a quiet 0.04 to 0.35 ceiling
+            const volumeSwell = Math.min(0.04 + (timeActive * 0.018), 0.35);
+
+            const pendulumConfig = {
+                frequency: currentPitch,
+                volume: volumeSwell,
+                attack: 0.05,
+                decay: 0.20,
+                release: 0.20,
+                filterFrequency: 3000
+            };
+
+            playSinePad({ ...pendulumConfig, start: 0 });
+
+            tickCounter++;
+        }, 800); // Every 800ms for a steady, heartbeat-like rhythm
+    });
+}
+
+export function stopUrgencyAudio() {
+    if (urgencyIntervalId) {
+        window.clearInterval(urgencyIntervalId);
+        urgencyIntervalId = null;
+    }
+
+    urgencyStartTime = 0;
+}
