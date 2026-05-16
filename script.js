@@ -6,6 +6,7 @@ import {
     playRoundSinePad,
     startUrgencyAudio,
     stopUrgencyAudio,
+    playTapGlassBead,
 } from './audio.js';
 
 // ---------------------------------------------------------------------------
@@ -255,25 +256,25 @@ function setState(next) {
     }
 }
 
-/**
- * Called by each player button when it is first activated during a drafting
- * pick. Once every player has tapped, the draft advances to the next pick.
- */
 function onPlayerActivated(playerIndex) {
     if (appState !== State.DRAFTING) return;
 
     activatedThisPick.add(playerIndex);
 
     // Last player: queue the tension.
+    playTapGlassBead(activatedThisPick.size - 1, playerCount);
+
     if (activatedThisPick.size === playerCount - 1) {
         startUrgencyAudio();
     }
 
     if (activatedThisPick.size >= playerCount) {
         stopUrgencyAudio();
-        void playRoundSinePad();
 
-        // Brief pause so the last player can see their timer start.
+        setTimeout(() => {
+            void playRoundSinePad();
+        }, 250);
+
         setTimeout(() => {
             if (appState !== State.DRAFTING) return;
             if (advancePick()) {

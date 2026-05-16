@@ -209,3 +209,47 @@ export function stopUrgencyAudio() {
 
     urgencyStartTime = 0;
 }
+
+export function playTapGlassBead(playerProgressIndex, totalPlayers) {
+    const context = getAudioContext();
+    if (!context) return;
+
+    // Midi notes 60 (C4) to 72 (C5).
+    const floorMidi = 60;
+    const ceilingMidi = 72;
+    const midiRange = ceilingMidi - floorMidi;
+
+    // Interpolate the MIDI note based on player progress, ensuring it scales with player count.
+    const steps = Math.max(1, totalPlayers - 1);
+    const exactMidiNote = floorMidi + (midiRange * (playerProgressIndex / steps));
+
+    const targetMidi = Math.round(exactMidiNote);
+
+    // Convert the MIDI note back to an exact acoustic frequency: 440 * 2^((note - 69) / 12)
+    const fundamental = 440 * Math.pow(2, (targetMidi - 69) / 12);
+    const now = context.currentTime;
+
+    const components = [
+        { freq: fundamental, vol: 0.14, decay: 0.07 },
+        { freq: fundamental * 2.00, vol: 0.08, decay: 0.04 },
+        { freq: fundamental * 3.00, vol: 0.04, decay: 0.02 }
+    ];
+
+    components.forEach(comp => {
+        const osc = context.createOscillator();
+        const gainNode = context.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(comp.freq, now);
+
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(comp.vol, now + 0.001);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + comp.decay);
+
+        osc.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        osc.start(now);
+        osc.stop(now + comp.decay + 0.02);
+    });
+}
